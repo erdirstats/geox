@@ -1,0 +1,545 @@
+---
+title: ""
+format: 
+    html:
+        fontsize: 0.9em
+        #mainfont: 'Fira Mono'
+        echo: false
+        code-tools: true
+        page-layout: custom
+        toc: false
+        margin-left: 35px
+        margin-right: 35px
+css: styles.css
+execute:
+    echo: false
+    warning: false
+    error: false
+---
+
+# DATA {.hidden}
+
+```{ojs}
+// read CSV files into OJS data
+dt_loc = FileAttachment('data-source/dt_loc.csv').csv({typed: true}) // location
+dt_cpt_raw = FileAttachment('data-source/dt_cpt_raw.csv').csv({typed: true}) // raw
+cpt_int = FileAttachment('data-source/dt_cpt_int.csv').csv({typed: true}) // interp
+dt_unit = FileAttachment('data-source/dt_unit.csv').csv({typed: true}) // soil unit
+```
+
+# UTILS {.hidden}
+
+Useful stuff
+
+```{ojs}
+// theme
+theme01 = ({
+  style: "background-color: black; color: white;"
+})
+
+theme02 = ({
+    style: {
+        fontSize: 14,
+        fontWeight: fnt,
+        background: theme ? bcg : "tomato",
+        color: "gray"
+    },
+    marginLeft: 0,
+    marginRight: 25,
+    marginTop: 25,
+    marginBottom: 25,
+    width: 900,
+    height: theme? 250 : 500,
+    grid: theme ? true : false
+})
+```
+
+```{ojs}
+import {rasterize} from "@mbostock/saving-svg"
+import {serialize} from "@mbostock/saving-svg"
+```
+
+# PLOT
+
+Plot some `stuff` and some **`plots`** here
+
+::: {.grid}
+
+::: {.g-col-2 .theme-test}
+
+## Controls
+
+Control the appearance here.
+
+::: {.panel-tabset}
+
+### Set 01
+
+```{ojs}
+// controls 
+// colors 
+viewof col_sch = Inputs.select(["Greys", "Turbo", "Viridis", "Warm"], {multiple: false, label: "Colors:", value: "Greys"})
+// binwidth
+viewof bin_wid = Inputs.range([1, 40], {value: 20, label: "Bin width:", step: 1})
+
+// select soil unit
+// left
+viewof filt_unit_01 = Inputs.select(cpt_int.map(d => d.soil_unit), {multiple: false, label: "Soil unit 1:", sort: true, unique: true})
+cpt_int_01 = cpt_int.filter(function(func_unit_filt) {return filt_unit_01.includes(func_unit_filt.soil_unit);})
+// right 
+viewof filt_unit_02 = Inputs.select(cpt_int.map(d => d.soil_unit), {multiple: false, label: "Soil unit 2:", sort: true, unique: true})
+cpt_int_02 = cpt_int.filter(function(func_unit_filt) {return filt_unit_02.includes(func_unit_filt.soil_unit);})
+```
+
+Input some file:
+
+```{ojs}
+// file 
+viewof file = Inputs.file()
+```
+
+Select boptions:
+
+```{ojs}
+viewof bcg = Inputs.color({label: "Favorite color", value: "#f0f0f0"})
+viewof fnt = Inputs.range([300, 900], {value: 500, label: "Font wight:", step: 100})
+viewof plot_width = Inputs.range([250, 750], {value: 500, label: "Plot width:", step: 10})
+```
+
+Select theme:
+
+```{ojs}
+viewof theme = Inputs.toggle({label: "Black?"})
+```
+
+### Set 02
+
+```{ojs}
+// controls 
+// colors 
+viewof col_sch2 = Inputs.select(["Greys", "Turbo", "Viridis", "Warm"], {multiple: false, label: "Colors:", value: "Greys"})
+// binwidth
+viewof bin_wid2 = Inputs.range([1, 40], {value: 20, label: "Bin width:", step: 1})
+
+// select soil unit
+// left
+viewof filt_unit_012 = Inputs.select(cpt_int.map(d => d.soil_unit), {multiple: false, label: "Soil unit 1:", sort: true, unique: true})
+cpt_int_012 = cpt_int.filter(function(func_unit_filt) {return filt_unit_01.includes(func_unit_filt.soil_unit);})
+// right 
+viewof filt_unit_022 = Inputs.select(cpt_int.map(d => d.soil_unit), {multiple: false, label: "Soil unit 2:", sort: true, unique: true})
+cpt_int_022 = cpt_int.filter(function(func_unit_filt) {return filt_unit_02.includes(func_unit_filt.soil_unit);})
+```
+
+:::
+
+:::
+
+::: {.g-col-5}
+
+## SBT plot: unit 1
+
+::: {.panel-tabset}
+
+### Hex
+
+::: {layout="[[1,1], [1,1]]"}
+
+```{ojs}
+Plot.plot({
+    ...theme01,
+    x: {
+        domain: [1e-1, 1e1],
+        tickFormat: ",",
+        ticks: 3,
+        label:"Fr",
+        type: "log"
+    },
+    y: {
+        domain: [1e0, 1e3],
+        tickFormat: ",",
+        ticks: 4,
+        label:"Qt",
+        type: "log"
+    },
+    marginLeft: 50,
+    marginRight: 25,
+    marginTop: 25,
+    marginBottom: 25,
+    width: plot_width,
+    height: 675,
+    grid: true,
+    color: {scheme: col_sch, legend: true, label: "No. dots", className: 'font-color'},
+  marks: [
+    Plot.frame(),
+    //Plot.hexgrid(),
+    Plot.dot(
+      cpt_int_01,
+      Plot.hexbin({r: "count", fill: "count"},
+      {
+        x: "Fr", 
+        y: "Qt",
+        fill: "currentColor",
+        bin_wid
+     }
+      )
+    )
+  ]
+})
+```
+
+```{ojs}
+chart = Plot.plot({
+    ...theme02,
+    x: {
+        domain: [1e-1, 1e1],
+        tickFormat: ",",
+        ticks: 3,
+        label:"Fr",
+        type: "log"
+    },
+    y: {
+        domain: [1e0, 1e3],
+        tickFormat: ",",
+        ticks: 4,
+        label:"Qt",
+        type: "log"
+    },
+    marginLeft: 50,
+    marginRight: 25,
+    marginTop: 25,
+    marginBottom: 25,
+    width: plot_width,
+    height: 675,
+    //grid: true,
+    color: {scheme: col_sch, legend: true, label: "No. dots"},
+  marks: [
+    Plot.frame(),
+    //Plot.hexgrid(),
+    Plot.dot(
+      cpt_int_01,
+      Plot.hexbin({r: "count", fill: "count"},
+      {
+        x: "Fr", 
+        y: "Qt",
+        fill: "currentColor",
+        bin_wid
+     }
+      )
+    )
+  ]
+})
+```
+
+```{ojs}
+Plot.plot({
+  style: {
+    background: bcg
+  },
+    x: {
+        domain: [1e-1, 1e1],
+        tickFormat: ",",
+        ticks: 3,
+        label:"Fr",
+        type: "log"
+    },
+    y: {
+        domain: [1e0, 1e3],
+        tickFormat: ",",
+        ticks: 4,
+        label:"Qt",
+        type: "log"
+    },
+    marginLeft: 50,
+    marginRight: 25,
+    marginTop: 25,
+    marginBottom: 25,
+    width: plot_width,
+    height: 675,
+    //grid: true,
+    color: {scheme: col_sch, legend: true, label: "No. dots"},
+  marks: [
+    Plot.frame(),
+    //Plot.hexgrid(),
+    Plot.dot(
+      cpt_int_01,
+      Plot.hexbin({r: "count", fill: "count"},
+      {
+        x: "Fr", 
+        y: "Qt",
+        fill: "currentColor",
+        bin_wid
+     }
+      )
+    )
+  ]
+})
+```
+
+```{ojs}
+Plot.plot({
+    x: {
+        domain: [1e-1, 1e1],
+        tickFormat: ",",
+        ticks: 3,
+        label:"Fr",
+        type: "log"
+    },
+    y: {
+        domain: [1e0, 1e3],
+        tickFormat: ",",
+        ticks: 4,
+        label:"Qt",
+        type: "log"
+    },
+    marginLeft: 50,
+    marginRight: 25,
+    marginTop: 25,
+    marginBottom: 25,
+    width: plot_width,
+    height: 675,
+    grid: true,
+    color: {scheme: col_sch, legend: true, label: "No. dots"},
+  marks: [
+    Plot.frame(),
+    //Plot.hexgrid(),
+    Plot.dot(
+      cpt_int_01,
+      Plot.hexbin({r: "count", fill: "count"},
+      {
+        x: "Fr", 
+        y: "Qt",
+        fill: "currentColor",
+        bin_wid
+     }
+      )
+    )
+  ]
+})
+```
+
+```{ojs}
+Plot.dot(cpt_int_01, {x: "qc", y: "depth"}).plot(theme? theme01 : theme02)
+```
+
+:::
+
+### Dot
+
+```{ojs}
+Plot.plot({
+  style: {
+    fontSize: 14,
+    fontWeight: 450,
+  },
+    x: {
+        domain: [1e-1, 1e1],
+        tickFormat: ",",
+        ticks: 3,
+        label:"Fr",
+        type: "log"
+    },
+    y: {
+        domain: [1e0, 1e3],
+        tickFormat: ",",
+        ticks: 4,
+        label:"Qt",
+        type: "log"
+    },
+    marginLeft: 50,
+    marginRight: 25,
+    marginTop: 25,
+    marginBottom: 25,
+    width: 700,
+    height: 675,
+    grid: true,
+    color: {legend: true, label: "Ic", domain: [1, 4], className: "font-color"},
+  marks: [
+    Plot.frame(),
+    Plot.dot(cpt_int_01,
+    {
+      x: "Fr", 
+      y: "Qt",
+      fill: "Ic"
+    })
+  ]
+})
+```
+
+:::
+
+:::
+
+::: {.g-col-5}
+
+## SBT plot: unit 2
+
+::: {.panel-tabset}
+
+### Hex
+
+```{ojs}
+Plot.plot({
+  style: {
+    fontSize: 14,
+    fontWeight: 450,
+  },
+    x: {
+        domain: [1e-1, 1e1],
+        tickFormat: ",",
+        ticks: 3,
+        label:"Fr",
+        type: "log"
+    },
+    y: {
+        domain: [1e0, 1e3],
+        tickFormat: ",",
+        ticks: 4,
+        label:"Qt",
+        type: "log"
+    },
+    marginLeft: 50,
+    marginRight: 25,
+    marginTop: 25,
+    marginBottom: 25,
+    width: 700,
+    height: 675,
+    grid: true,
+    color: {scheme: col_sch, legend: true, label: "No. dots"},
+  marks: [
+    Plot.frame(),
+    //Plot.hexgrid(),
+    Plot.dot(
+      cpt_int_02,
+      Plot.hexbin({r: "count", fill: "count"},
+      {
+        x: "Fr", 
+        y: "Qt",
+        bin_wid
+     }
+      )
+    )
+  ]
+})
+```
+
+### Dot
+
+```{ojs}
+Plot.plot({
+  style: {
+    fontSize: 14,
+    fontWeight: 450,
+  },
+    x: {
+        domain: [1e-1, 1e1],
+        tickFormat: ",",
+        ticks: 3,
+        label:"Fr",
+        type: "log"
+    },
+    y: {
+        domain: [1e0, 1e3],
+        tickFormat: ",",
+        ticks: 4,
+        label:"Qt",
+        type: "log"
+    },
+    marginLeft: 50,
+    marginRight: 25,
+    marginTop: 25,
+    marginBottom: 25,
+    width: 700,
+    height: 675,
+    grid: true,
+    color: {legend: true, label: "Ic", domain: [1, 4]},
+  marks: [
+    Plot.frame(),
+    Plot.dot(cpt_int_02,
+    {
+      x: "Fr", 
+      y: "Qt",
+      fill: "Ic"
+    })
+  ]
+})
+```
+
+:::
+
+:::
+
+:::
+
+# REUSE CODE
+
+## Data from other QMD doc
+
+```{ojs}
+import { data_test_01 } from "./utils.qmd";
+Inputs.table(data_test_01)
+```
+
+## Function from other JS file
+
+### Square root
+
+```{ojs}
+import { square } from "./utils.js"
+comp = square(inp)
+```
+
+```{ojs}
+viewof inp = Inputs.range([1, 40], {value: 20, label: "No. to square:", step: 1})
+```
+
+Result is: **${comp}**
+
+## Output from another QMD doc
+
+```{ojs}
+import { plot_reuse } from "./utils.qmd";
+plot_reuse
+```
+
+## Functions by others
+
+```{ojs}
+import { build_samples } from '@mcmcclur/adaptive-plotter'
+```
+
+```{ojs}
+Plot.plot({
+  width: 640,
+  height: 200,
+  y: { domain: [-0.01, 1.05] },
+  marks: [
+    Plot.line(
+      build_samples((x) => Math.exp(-x * x), -2.8, 2.8),
+      {
+        strokeWidth: 3,
+        stroke: "steelblue"
+      }
+    ),
+    Plot.dot(
+      [
+        [1 / Math.sqrt(2), Math.exp(-1 / 2)],
+        [-1 / Math.sqrt(2), Math.exp(-1 / 2)]
+      ],
+      { fill: "black", r: 5 }
+    ),
+    Plot.ruleX([0]),
+    Plot.ruleY([0])
+  ]
+})
+```
+
+# Save PNG, SVG
+
+```{ojs}
+DOM.download(() => rasterize(chart), undefined, "Save as PNG")
+```
+
+```{ojs}
+DOM.download(() => serialize(chart), undefined, "Save as SVG")
+```
+

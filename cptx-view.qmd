@@ -1,0 +1,418 @@
+---
+title: ""
+format: 
+    html:
+        fontsize: 0.9em
+        echo: false
+        code-tools: true
+        page-layout: custom
+        toc: false
+        margin-left: 35px
+        margin-right: 35px
+css: styles.css
+execute:
+    echo: false
+    warning: false
+    error: false
+---
+
+# UTILS {.hidden}
+
+Useful stuff which we don't want to show on screen.
+
+## Plot update
+
+Update to Plot latest version, by overwritting existing Plot version
+
+```{ojs}
+Plot = import("https://esm.sh/@observablehq/plot") 
+```
+
+## Data
+
+```{ojs}
+// read CSV files into OJS data
+dt_loc = FileAttachment('data-source/dt_loc.csv').csv({typed: true}) // location
+dt_cpt_raw = FileAttachment('data-source/dt_cpt_raw.csv').csv({typed: true}) // raw
+dt_cpt_int = FileAttachment('data-source/dt_cpt_int.csv').csv({typed: true}) // interp
+dt_unit = FileAttachment('data-source/dt_unit.csv').csv({typed: true}) // soil unit
+```
+
+## Theme
+
+```{ojs}
+// plot themes
+theme_01 = ({
+    style: {
+        fontSize: 14,
+        fontWeight: 450,
+        background: theme === 'light' ? color_light : color_dark,
+        color: theme === 'light' ? color_dark : color_light,
+    },
+    marginLeft: margin_left,
+    marginRight: 25,
+    marginTop: 25,
+    marginBottom: 50,
+    grid: true
+})
+
+// parameters
+margin_left = 50
+color_light = '#f9f9f9'
+color_dark = '#1c1c1c'
+```
+
+
+```{ojs}
+theme_light = ({
+    style: {
+        fontSize: 14,
+        fontWeight: 450,
+        background: color_light,
+        color: color_dark,
+    }
+})
+
+theme_dark = ({
+    style: {
+        fontSize: 14,
+        fontWeight: 450,
+        background: color_dark,
+        color: color_light,
+    }
+})
+```
+## Logo
+
+```{ojs}
+logo_ngi = FileAttachment("logo.svg").url()
+```
+
+## Imports
+
+```{ojs}
+// import { addTooltips } from "@mkfreeman/plot-tooltip"
+import {aq, op} from "@uwdata/arquero"
+import {number} from "@jashkenas/inputs"
+```
+
+## CPTX  
+CPT explorer and more
+
+::: {.panel-tabset}
+
+### TAB 1
+
+::: {.grid}
+
+::: {.g-col-3}
+
+### CONTROL
+
+Control panel for what shows up on the right.
+
+::: {.panel-tabset}
+
+#### DATA
+
+Control data
+
+$$
+\text{Location data:}
+$$
+
+```{ojs}
+Inputs.table(dt_loc)
+```
+
+*Soil units*
+
+```{ojs}
+Inputs.table(dt_unit)
+```
+
+*From Arquero*
+
+```{ojs}
+dt = aq.from(dt_unit) // data in arquero format
+dt.view(5)
+```
+
+#### PLOT
+
+**Control plot**
+
+```{ojs}
+// theme
+viewof theme = Inputs.radio(['light', 'dark'], {label: html`Top <i>Select theme:</i>`, value: 'light'}) // plot theme
+viewof logo = Inputs.toggle({label: "Include logo?"}) // logo
+viewof logo_size = Inputs.range([25, 100], {value: 75, label: html`<span style="background-color: rgb(250, 207, 57);">Logo size:</span>`, step: 5})
+```
+
+Include text
+
+```{ojs}
+viewof text_plot = Inputs.text({label: "Text", value: "Text to plot..."})
+viewof text_x = Inputs.range([0, 100], {label: tex`\beta(\textbf{r})`, value: 1})
+viewof text_y = Inputs.range([0, 100], {label: "Text-y", value: 1}) // range to max value of data (set manually); same for step etc
+```
+
+<details>
+
+<summary>Show info:</summary>
+
+Write some text *here* so we describe **other** things. bla bla bla. The theme we are using is: **${theme}**
+
+</details>
+
+:::
+
+:::
+
+::: {.g-col-9}
+
+### VIEWER
+
+Control panel for what shows up on the right.
+
+::: {.panel-tabset}
+
+#### VIEW 1
+
+View plots
+
+```{ojs}
+Plot.plot({
+    ...theme_01,
+    width: 750,
+    height: 500,
+    color: {legend: true},
+  marks: [
+    Plot.frame(),
+    Plot.dot(dt_unit, {
+        x: 'soil_unit_thickness', 
+        y: 'depth_top', 
+        fill: 'soil_type', 
+        title: (d) => `${d.soil_unit} \n soil type: ${d.soil_type}`
+    }),
+    logo? Plot.image([logo_ngi], { src: [logo_ngi], frameAnchor: "top-right", dx: -40, dy: 20, width: logo_size }) : null,
+    // text
+    Plot.text([text_plot], {x: text_x, y: text_y, fontSize: 12, lineWidth: 10, monospace: true, fill: theme === 'light' ? color_dark : color_light, stroke: theme === 'light' ? color_light : color_dark})
+  ]
+})
+```
+
+#### VIEW 2
+
+View plots
+
+```{ojs}
+Plot.plot({
+    ...theme_01,
+    width: 600,
+    height: 500,
+    color: {legend: true},
+  marks: [
+    Plot.frame(),
+    Plot.dot(dt_unit, {
+        x: 'soil_unit_thickness', 
+        y: 'depth_top', 
+        fill: 'soil_type',
+        tip: logo ? true : false
+    }),
+    logo ? Plot.crosshair(dt_unit, {
+        x: 'soil_unit_thickness', 
+        y: 'depth_top',
+        color: 'soil_type'
+    }) : null,
+    logo ? Plot.dot(dt_unit, Plot.pointer({x: "soil_unit_thickness", y: "depth_top", fill: "red", r: 8})) : null,
+    logo? Plot.image([logo_ngi], { src: [logo_ngi], frameAnchor: "top-right", dx: -40, dy: 20, width: logo_size }) : null,
+    // text
+    Plot.text([text_plot], {x: text_x, y: text_y, fontSize: 12, lineWidth: 10, monospace: true, fill: theme === 'light' ? color_dark : color_light, stroke: theme === 'light' ? color_light : color_dark})
+  ]
+})
+```
+
+Scrollable plot:
+
+```{ojs}
+long_scroll = {
+  let outer_div = d3
+    .create("div")
+    .style("width", "500px") // if commented, it fills-in all the page width
+    .style("height", "500px")
+    .style("overflow", "auto");
+  let inner_div = outer_div
+    .append("div")
+    .style("width", "5000px")
+    .style("height", "250px");
+  inner_div.append(() =>
+    Plot.plot({
+      width: 5000,
+      height: 200,
+      marks: [
+        Plot.line(
+          d3
+            .range(0, 2000, 0.1)
+            .map((t) => [t, 50 + Math.sin(t) + Math.sin(1.02 * t)])
+        )
+      ]
+    })
+  );
+
+  return outer_div.node();
+}
+```
+
+```{ojs}
+long_scroll_2 = {
+  let outer_div = d3
+    .create("div")
+    .style("width", "500px") // if commented, it fills-in all the page width
+    .style("height", "500px")
+    .style("overflow", "auto");
+  let inner_div = outer_div
+    .append("div")
+    .style("width", "5000px")
+    //.style("height", "500px");
+  inner_div.append(() =>
+    Plot.plot({
+    ...theme_01,
+    width: 5000,
+    height: 500,
+    color: {legend: true},
+  marks: [
+    Plot.frame(),
+    Plot.dot(dt_unit, {
+        x: 'soil_unit_thickness', 
+        y: 'depth_top', 
+        fill: 'soil_type',
+        tip: true
+    }),
+    Plot.crosshair(dt_unit, {
+        x: 'soil_unit_thickness', 
+        y: 'depth_top',
+        color: 'soil_type'
+    }),
+    Plot.dot(dt_unit, Plot.pointer({x: "soil_unit_thickness", y: "depth_top", fill: "red", r: 8})),
+    logo? Plot.image([logo_ngi], { src: [logo_ngi], frameAnchor: "top-right", dx: -40, dy: 20, width: logo_size }) : null,
+    // text
+    Plot.text([text_plot], {x: text_x, y: text_y, fontSize: 12, lineWidth: 10, monospace: true, fill: theme === 'light' ? color_dark : color_light, stroke: theme === 'light' ? color_light : color_dark})
+  ]
+})
+  );
+
+  return outer_div.node();
+}
+```
+
+:::
+
+:::
+
+:::
+
+### TAB 2
+
+Some text
+
+### TAB 3
+
+Some text
+
+### TAB 4
+
+Some texts
+
+:::
+
+```{ojs}
+html`<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">`
+
+ns = Inputs.text().classList[0]
+
+html`<style>
+/* all */
+.${ns}{
+  background-color: #f7f7f7;
+}
+
+/* labels */
+.${ns} label {
+  background-color: #f0f0f0;  
+  padding: 5px;
+  border-radius: 10px;
+  border-style: none;
+}
+
+.${ns} label:hover {
+  background-color: #ffefe0;
+  color: blue;
+}
+
+/* right side */
+.${ns} div {
+  background-color: #e5edff;
+  padding: 5px;
+  border-radius: 10px;
+}
+
+/* right side: label */
+.${ns} div label {
+  background-color: #ccdbff;
+  padding: 0px;
+  border-radius: 10px;
+  font-style: italic;
+}
+
+.${ns} div label:hover,
+.${ns} div label:active,
+.${ns} div label:focus {
+  background-color: #303030;
+  color: #f7f7f7;
+}
+
+/* right side: input */
+.${ns} input {
+  background-color: black;
+  color: white;
+  accent-color: tomato;
+  border-radius: 10px;
+  border-style: none;
+}
+
+/* other */
+.${ns} button {
+  background-color: green;
+  color: white;
+  border-radius: 10px;
+  border-style: none;
+}
+
+.${ns} select {
+  background-color: green;
+  color: white;
+  border-radius: 10px;
+  border-style: none;
+  width: 450px
+  font-family: "Roboto Mono";
+}
+
+.${ns} textarea {
+  background-color: black;
+  color: white;
+  border-radius: 10px;
+  border-style: none;
+}
+
+.${ns} table {
+  background-color: white;
+  color: gray;
+  border-radius: 10px;
+  border-style: none;
+  font-family: "Roboto Mono";
+  font-size: 10px;
+}
+</style>`
+```
+

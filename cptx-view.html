@@ -1,0 +1,1377 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.353">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>cptx-view</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="cptx-view_files/libs/clipboard/clipboard.min.js"></script>
+<script src="cptx-view_files/libs/quarto-html/quarto.js"></script>
+<script src="cptx-view_files/libs/quarto-html/popper.min.js"></script>
+<script src="cptx-view_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="cptx-view_files/libs/quarto-html/anchor.min.js"></script>
+<link href="cptx-view_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="cptx-view_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="cptx-view_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="cptx-view_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="cptx-view_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script type="module" src="cptx-view_files/libs/quarto-ojs/quarto-ojs-runtime.js"></script>
+<link href="cptx-view_files/libs/quarto-ojs/quarto-ojs.css" rel="stylesheet">
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="fullcontent">
+
+<div class="page-layout-custom">  
+
+
+
+<section id="utils" class="level1 hidden">
+<h1 class="hidden">UTILS</h1>
+<p>Useful stuff which we don’t want to show on screen.</p>
+<section id="plot-update" class="level2">
+<h2 data-anchor-id="plot-update">Plot update</h2>
+<p>Update to Plot latest version, by overwritting existing Plot version</p>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb1" data-startfrom="27" data-source-offset="0"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 26;"><span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>Plot <span class="op">=</span> <span class="im">import</span>(<span class="st">"https://esm.sh/@observablehq/plot"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-1" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+</section>
+<section id="data" class="level2">
+<h2 data-anchor-id="data">Data</h2>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb2" data-startfrom="35" data-source-offset="-33"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 34;"><span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>dt_loc <span class="op">=</span> <span class="fu">FileAttachment</span>(<span class="st">'data-source/dt_loc.csv'</span>)<span class="op">.</span><span class="fu">csv</span>({<span class="dt">typed</span><span class="op">:</span> <span class="kw">true</span>}) <span class="co">// location</span></span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>dt_cpt_raw <span class="op">=</span> <span class="fu">FileAttachment</span>(<span class="st">'data-source/dt_cpt_raw.csv'</span>)<span class="op">.</span><span class="fu">csv</span>({<span class="dt">typed</span><span class="op">:</span> <span class="kw">true</span>}) <span class="co">// raw</span></span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>dt_cpt_int <span class="op">=</span> <span class="fu">FileAttachment</span>(<span class="st">'data-source/dt_cpt_int.csv'</span>)<span class="op">.</span><span class="fu">csv</span>({<span class="dt">typed</span><span class="op">:</span> <span class="kw">true</span>}) <span class="co">// interp</span></span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>dt_unit <span class="op">=</span> <span class="fu">FileAttachment</span>(<span class="st">'data-source/dt_unit.csv'</span>)<span class="op">.</span><span class="fu">csv</span>({<span class="dt">typed</span><span class="op">:</span> <span class="kw">true</span>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-2-1" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-2-2" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-2-3" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-2-4" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="theme" class="level2">
+<h2 data-anchor-id="theme">Theme</h2>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb3" data-startfrom="45" data-source-offset="-16"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 44;"><span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a>theme_01 <span class="op">=</span> ({</span>
+<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a>    <span class="dt">style</span><span class="op">:</span> {</span>
+<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a>        <span class="dt">fontSize</span><span class="op">:</span> <span class="dv">14</span><span class="op">,</span></span>
+<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a>        <span class="dt">fontWeight</span><span class="op">:</span> <span class="dv">450</span><span class="op">,</span></span>
+<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a>        <span class="dt">background</span><span class="op">:</span> theme <span class="op">===</span> <span class="st">'light'</span> <span class="op">?</span> color_light <span class="op">:</span> color_dark<span class="op">,</span></span>
+<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a>        <span class="dt">color</span><span class="op">:</span> theme <span class="op">===</span> <span class="st">'light'</span> <span class="op">?</span> color_dark <span class="op">:</span> color_light<span class="op">,</span></span>
+<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a>    }<span class="op">,</span></span>
+<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a>    <span class="dt">marginLeft</span><span class="op">:</span> margin_left<span class="op">,</span></span>
+<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a>    <span class="dt">marginRight</span><span class="op">:</span> <span class="dv">25</span><span class="op">,</span></span>
+<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a>    <span class="dt">marginTop</span><span class="op">:</span> <span class="dv">25</span><span class="op">,</span></span>
+<span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a>    <span class="dt">marginBottom</span><span class="op">:</span> <span class="dv">50</span><span class="op">,</span></span>
+<span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a>    <span class="dt">grid</span><span class="op">:</span> <span class="kw">true</span></span>
+<span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb3-58"><a href="#cb3-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-59"><a href="#cb3-59" aria-hidden="true" tabindex="-1"></a><span class="co">// parameters</span></span>
+<span id="cb3-60"><a href="#cb3-60" aria-hidden="true" tabindex="-1"></a>margin_left <span class="op">=</span> <span class="dv">50</span></span>
+<span id="cb3-61"><a href="#cb3-61" aria-hidden="true" tabindex="-1"></a>color_light <span class="op">=</span> <span class="st">'#f9f9f9'</span></span>
+<span id="cb3-62"><a href="#cb3-62" aria-hidden="true" tabindex="-1"></a>color_dark <span class="op">=</span> <span class="st">'#1c1c1c'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-3-1" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-3-2" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-3-3" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-3-4" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb4" data-startfrom="67" data-source-offset="-0"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 66;"><span id="cb4-67"><a href="#cb4-67" aria-hidden="true" tabindex="-1"></a>theme_light <span class="op">=</span> ({</span>
+<span id="cb4-68"><a href="#cb4-68" aria-hidden="true" tabindex="-1"></a>    <span class="dt">style</span><span class="op">:</span> {</span>
+<span id="cb4-69"><a href="#cb4-69" aria-hidden="true" tabindex="-1"></a>        <span class="dt">fontSize</span><span class="op">:</span> <span class="dv">14</span><span class="op">,</span></span>
+<span id="cb4-70"><a href="#cb4-70" aria-hidden="true" tabindex="-1"></a>        <span class="dt">fontWeight</span><span class="op">:</span> <span class="dv">450</span><span class="op">,</span></span>
+<span id="cb4-71"><a href="#cb4-71" aria-hidden="true" tabindex="-1"></a>        <span class="dt">background</span><span class="op">:</span> color_light<span class="op">,</span></span>
+<span id="cb4-72"><a href="#cb4-72" aria-hidden="true" tabindex="-1"></a>        <span class="dt">color</span><span class="op">:</span> color_dark<span class="op">,</span></span>
+<span id="cb4-73"><a href="#cb4-73" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb4-74"><a href="#cb4-74" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb4-75"><a href="#cb4-75" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-76"><a href="#cb4-76" aria-hidden="true" tabindex="-1"></a>theme_dark <span class="op">=</span> ({</span>
+<span id="cb4-77"><a href="#cb4-77" aria-hidden="true" tabindex="-1"></a>    <span class="dt">style</span><span class="op">:</span> {</span>
+<span id="cb4-78"><a href="#cb4-78" aria-hidden="true" tabindex="-1"></a>        <span class="dt">fontSize</span><span class="op">:</span> <span class="dv">14</span><span class="op">,</span></span>
+<span id="cb4-79"><a href="#cb4-79" aria-hidden="true" tabindex="-1"></a>        <span class="dt">fontWeight</span><span class="op">:</span> <span class="dv">450</span><span class="op">,</span></span>
+<span id="cb4-80"><a href="#cb4-80" aria-hidden="true" tabindex="-1"></a>        <span class="dt">background</span><span class="op">:</span> color_dark<span class="op">,</span></span>
+<span id="cb4-81"><a href="#cb4-81" aria-hidden="true" tabindex="-1"></a>        <span class="dt">color</span><span class="op">:</span> color_light<span class="op">,</span></span>
+<span id="cb4-82"><a href="#cb4-82" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb4-83"><a href="#cb4-83" aria-hidden="true" tabindex="-1"></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-4-1" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-4-2" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="logo" class="level2">
+<h2 data-anchor-id="logo">Logo</h2>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb5" data-startfrom="87" data-source-offset="0"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 86;"><span id="cb5-87"><a href="#cb5-87" aria-hidden="true" tabindex="-1"></a>logo_ngi <span class="op">=</span> <span class="fu">FileAttachment</span>(<span class="st">"logo.svg"</span>)<span class="op">.</span><span class="fu">url</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-5" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+</section>
+<section id="imports" class="level2">
+<h2 data-anchor-id="imports">Imports</h2>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb6" data-startfrom="95" data-source-offset="-58"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 94;"><span id="cb6-95"><a href="#cb6-95" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> {aq<span class="op">,</span> op} <span class="im">from</span> <span class="st">"@uwdata/arquero"</span></span>
+<span id="cb6-96"><a href="#cb6-96" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> {number} <span class="im">from</span> <span class="st">"@jashkenas/inputs"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-6-1" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-6-2" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="cptx" class="level2">
+<h2 data-anchor-id="cptx">CPTX</h2>
+<p>CPT explorer and more</p>
+<div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true" href="">TAB 1</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false" href="">TAB 2</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-3" role="tab" aria-controls="tabset-3-3" aria-selected="false" href="">TAB 3</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-4" role="tab" aria-controls="tabset-3-4" aria-selected="false" href="">TAB 4</a></li></ul>
+<div class="tab-content">
+<div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
+<div class="grid">
+<section id="control" class="level3 g-col-3">
+<h3 data-anchor-id="control">CONTROL</h3>
+<p>Control panel for what shows up on the right.</p>
+<div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">DATA</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">PLOT</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<p>Control data</p>
+<p><span class="math display">\[
+\text{Location data:}
+\]</span></p>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb7" data-startfrom="124" data-source-offset="0"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 123;"><span id="cb7-124"><a href="#cb7-124" aria-hidden="true" tabindex="-1"></a>Inputs<span class="op">.</span><span class="fu">table</span>(dt_loc)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-7" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<p><em>Soil units</em></p>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb8" data-startfrom="130" data-source-offset="0"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 129;"><span id="cb8-130"><a href="#cb8-130" aria-hidden="true" tabindex="-1"></a>Inputs<span class="op">.</span><span class="fu">table</span>(dt_unit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-8" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<p><em>From Arquero</em></p>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb9" data-startfrom="137" data-source-offset="-0"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 136;"><span id="cb9-137"><a href="#cb9-137" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> aq<span class="op">.</span><span class="fu">from</span>(dt_unit) <span class="co">// data in arquero format</span></span>
+<span id="cb9-138"><a href="#cb9-138" aria-hidden="true" tabindex="-1"></a>dt<span class="op">.</span><span class="fu">view</span>(<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-9-1" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-9-2" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<p><strong>Control plot</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb10" data-startfrom="147" data-source-offset="-10"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 146;"><span id="cb10-147"><a href="#cb10-147" aria-hidden="true" tabindex="-1"></a>viewof theme <span class="op">=</span> Inputs<span class="op">.</span><span class="fu">radio</span>([<span class="st">'light'</span><span class="op">,</span> <span class="st">'dark'</span>]<span class="op">,</span> {<span class="dt">label</span><span class="op">:</span> <span class="fu">html</span><span class="vs">`Top &lt;i&gt;Select theme:&lt;/i&gt;`</span><span class="op">,</span> <span class="dt">value</span><span class="op">:</span> <span class="st">'light'</span>}) <span class="co">// plot theme</span></span>
+<span id="cb10-148"><a href="#cb10-148" aria-hidden="true" tabindex="-1"></a>viewof logo <span class="op">=</span> Inputs<span class="op">.</span><span class="fu">toggle</span>({<span class="dt">label</span><span class="op">:</span> <span class="st">"Include logo?"</span>}) <span class="co">// logo</span></span>
+<span id="cb10-149"><a href="#cb10-149" aria-hidden="true" tabindex="-1"></a>viewof logo_size <span class="op">=</span> Inputs<span class="op">.</span><span class="fu">range</span>([<span class="dv">25</span><span class="op">,</span> <span class="dv">100</span>]<span class="op">,</span> {<span class="dt">value</span><span class="op">:</span> <span class="dv">75</span><span class="op">,</span> <span class="dt">label</span><span class="op">:</span> <span class="fu">html</span><span class="vs">`&lt;span style="background-color: rgb(250, 207, 57);"&gt;Logo size:&lt;/span&gt;`</span><span class="op">,</span> <span class="dt">step</span><span class="op">:</span> <span class="dv">5</span>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-10-1" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-10-2" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-10-3" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+</div>
+<p>Include text</p>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb11" data-startfrom="155" data-source-offset="-0"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 154;"><span id="cb11-155"><a href="#cb11-155" aria-hidden="true" tabindex="-1"></a>viewof text_plot <span class="op">=</span> Inputs<span class="op">.</span><span class="fu">text</span>({<span class="dt">label</span><span class="op">:</span> <span class="st">"Text"</span><span class="op">,</span> <span class="dt">value</span><span class="op">:</span> <span class="st">"Text to plot..."</span>})</span>
+<span id="cb11-156"><a href="#cb11-156" aria-hidden="true" tabindex="-1"></a>viewof text_x <span class="op">=</span> Inputs<span class="op">.</span><span class="fu">range</span>([<span class="dv">0</span><span class="op">,</span> <span class="dv">100</span>]<span class="op">,</span> {<span class="dt">label</span><span class="op">:</span> <span class="fu">tex</span><span class="vs">`</span><span class="sc">\b</span><span class="vs">eta(</span><span class="sc">\t</span><span class="vs">extbf{r})`</span><span class="op">,</span> <span class="dt">value</span><span class="op">:</span> <span class="dv">1</span>})</span>
+<span id="cb11-157"><a href="#cb11-157" aria-hidden="true" tabindex="-1"></a>viewof text_y <span class="op">=</span> Inputs<span class="op">.</span><span class="fu">range</span>([<span class="dv">0</span><span class="op">,</span> <span class="dv">100</span>]<span class="op">,</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"Text-y"</span><span class="op">,</span> <span class="dt">value</span><span class="op">:</span> <span class="dv">1</span>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-11-1" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-11-2" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-11-3" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+</div>
+<details>
+<summary>
+Show info:
+</summary>
+<p>Write some text <em>here</em> so we describe <strong>other</strong> things. bla bla bla. The theme we are using is: <strong><span><span id="ojs-element-id-1"></span></span></strong></p>
+</details>
+</div>
+</div>
+</div>
+</section>
+<section id="viewer" class="level3 g-col-9">
+<h3 data-anchor-id="viewer">VIEWER</h3>
+<p>Control panel for what shows up on the right.</p>
+<div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true" href="">VIEW 1</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false" href="">VIEW 2</a></li></ul>
+<div class="tab-content">
+<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
+<p>View plots</p>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb12" data-startfrom="184" data-source-offset="0"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 183;"><span id="cb12-184"><a href="#cb12-184" aria-hidden="true" tabindex="-1"></a>Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb12-185"><a href="#cb12-185" aria-hidden="true" tabindex="-1"></a>    <span class="op">...</span>theme_01<span class="op">,</span></span>
+<span id="cb12-186"><a href="#cb12-186" aria-hidden="true" tabindex="-1"></a>    <span class="dt">width</span><span class="op">:</span> <span class="dv">750</span><span class="op">,</span></span>
+<span id="cb12-187"><a href="#cb12-187" aria-hidden="true" tabindex="-1"></a>    <span class="dt">height</span><span class="op">:</span> <span class="dv">500</span><span class="op">,</span></span>
+<span id="cb12-188"><a href="#cb12-188" aria-hidden="true" tabindex="-1"></a>    <span class="dt">color</span><span class="op">:</span> {<span class="dt">legend</span><span class="op">:</span> <span class="kw">true</span>}<span class="op">,</span></span>
+<span id="cb12-189"><a href="#cb12-189" aria-hidden="true" tabindex="-1"></a>  <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb12-190"><a href="#cb12-190" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">frame</span>()<span class="op">,</span></span>
+<span id="cb12-191"><a href="#cb12-191" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">dot</span>(dt_unit<span class="op">,</span> {</span>
+<span id="cb12-192"><a href="#cb12-192" aria-hidden="true" tabindex="-1"></a>        <span class="dt">x</span><span class="op">:</span> <span class="st">'soil_unit_thickness'</span><span class="op">,</span> </span>
+<span id="cb12-193"><a href="#cb12-193" aria-hidden="true" tabindex="-1"></a>        <span class="dt">y</span><span class="op">:</span> <span class="st">'depth_top'</span><span class="op">,</span> </span>
+<span id="cb12-194"><a href="#cb12-194" aria-hidden="true" tabindex="-1"></a>        <span class="dt">fill</span><span class="op">:</span> <span class="st">'soil_type'</span><span class="op">,</span> </span>
+<span id="cb12-195"><a href="#cb12-195" aria-hidden="true" tabindex="-1"></a>        <span class="dt">title</span><span class="op">:</span> (d) <span class="kw">=&gt;</span> <span class="vs">`</span><span class="sc">${</span>d<span class="op">.</span><span class="at">soil_unit</span><span class="sc">}</span><span class="vs"> </span><span class="sc">\n</span><span class="vs"> soil type: </span><span class="sc">${</span>d<span class="op">.</span><span class="at">soil_type</span><span class="sc">}</span><span class="vs">`</span></span>
+<span id="cb12-196"><a href="#cb12-196" aria-hidden="true" tabindex="-1"></a>    })<span class="op">,</span></span>
+<span id="cb12-197"><a href="#cb12-197" aria-hidden="true" tabindex="-1"></a>    logo<span class="op">?</span> Plot<span class="op">.</span><span class="fu">image</span>([logo_ngi]<span class="op">,</span> { <span class="dt">src</span><span class="op">:</span> [logo_ngi]<span class="op">,</span> <span class="dt">frameAnchor</span><span class="op">:</span> <span class="st">"top-right"</span><span class="op">,</span> <span class="dt">dx</span><span class="op">:</span> <span class="op">-</span><span class="dv">40</span><span class="op">,</span> <span class="dt">dy</span><span class="op">:</span> <span class="dv">20</span><span class="op">,</span> <span class="dt">width</span><span class="op">:</span> logo_size }) <span class="op">:</span> <span class="kw">null</span><span class="op">,</span></span>
+<span id="cb12-198"><a href="#cb12-198" aria-hidden="true" tabindex="-1"></a>    <span class="co">// text</span></span>
+<span id="cb12-199"><a href="#cb12-199" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">text</span>([text_plot]<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> text_x<span class="op">,</span> <span class="dt">y</span><span class="op">:</span> text_y<span class="op">,</span> <span class="dt">fontSize</span><span class="op">:</span> <span class="dv">12</span><span class="op">,</span> <span class="dt">lineWidth</span><span class="op">:</span> <span class="dv">10</span><span class="op">,</span> <span class="dt">monospace</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> theme <span class="op">===</span> <span class="st">'light'</span> <span class="op">?</span> color_dark <span class="op">:</span> color_light<span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> theme <span class="op">===</span> <span class="st">'light'</span> <span class="op">?</span> color_light <span class="op">:</span> color_dark})</span>
+<span id="cb12-200"><a href="#cb12-200" aria-hidden="true" tabindex="-1"></a>  ]</span>
+<span id="cb12-201"><a href="#cb12-201" aria-hidden="true" tabindex="-1"></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-12" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
+<p>View plots</p>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb13" data-startfrom="209" data-source-offset="0"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 208;"><span id="cb13-209"><a href="#cb13-209" aria-hidden="true" tabindex="-1"></a>Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb13-210"><a href="#cb13-210" aria-hidden="true" tabindex="-1"></a>    <span class="op">...</span>theme_01<span class="op">,</span></span>
+<span id="cb13-211"><a href="#cb13-211" aria-hidden="true" tabindex="-1"></a>    <span class="dt">width</span><span class="op">:</span> <span class="dv">600</span><span class="op">,</span></span>
+<span id="cb13-212"><a href="#cb13-212" aria-hidden="true" tabindex="-1"></a>    <span class="dt">height</span><span class="op">:</span> <span class="dv">500</span><span class="op">,</span></span>
+<span id="cb13-213"><a href="#cb13-213" aria-hidden="true" tabindex="-1"></a>    <span class="dt">color</span><span class="op">:</span> {<span class="dt">legend</span><span class="op">:</span> <span class="kw">true</span>}<span class="op">,</span></span>
+<span id="cb13-214"><a href="#cb13-214" aria-hidden="true" tabindex="-1"></a>  <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb13-215"><a href="#cb13-215" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">frame</span>()<span class="op">,</span></span>
+<span id="cb13-216"><a href="#cb13-216" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">dot</span>(dt_unit<span class="op">,</span> {</span>
+<span id="cb13-217"><a href="#cb13-217" aria-hidden="true" tabindex="-1"></a>        <span class="dt">x</span><span class="op">:</span> <span class="st">'soil_unit_thickness'</span><span class="op">,</span> </span>
+<span id="cb13-218"><a href="#cb13-218" aria-hidden="true" tabindex="-1"></a>        <span class="dt">y</span><span class="op">:</span> <span class="st">'depth_top'</span><span class="op">,</span> </span>
+<span id="cb13-219"><a href="#cb13-219" aria-hidden="true" tabindex="-1"></a>        <span class="dt">fill</span><span class="op">:</span> <span class="st">'soil_type'</span><span class="op">,</span></span>
+<span id="cb13-220"><a href="#cb13-220" aria-hidden="true" tabindex="-1"></a>        <span class="dt">tip</span><span class="op">:</span> logo <span class="op">?</span> <span class="kw">true</span> <span class="op">:</span> <span class="kw">false</span></span>
+<span id="cb13-221"><a href="#cb13-221" aria-hidden="true" tabindex="-1"></a>    })<span class="op">,</span></span>
+<span id="cb13-222"><a href="#cb13-222" aria-hidden="true" tabindex="-1"></a>    logo <span class="op">?</span> Plot<span class="op">.</span><span class="fu">crosshair</span>(dt_unit<span class="op">,</span> {</span>
+<span id="cb13-223"><a href="#cb13-223" aria-hidden="true" tabindex="-1"></a>        <span class="dt">x</span><span class="op">:</span> <span class="st">'soil_unit_thickness'</span><span class="op">,</span> </span>
+<span id="cb13-224"><a href="#cb13-224" aria-hidden="true" tabindex="-1"></a>        <span class="dt">y</span><span class="op">:</span> <span class="st">'depth_top'</span><span class="op">,</span></span>
+<span id="cb13-225"><a href="#cb13-225" aria-hidden="true" tabindex="-1"></a>        <span class="dt">color</span><span class="op">:</span> <span class="st">'soil_type'</span></span>
+<span id="cb13-226"><a href="#cb13-226" aria-hidden="true" tabindex="-1"></a>    }) <span class="op">:</span> <span class="kw">null</span><span class="op">,</span></span>
+<span id="cb13-227"><a href="#cb13-227" aria-hidden="true" tabindex="-1"></a>    logo <span class="op">?</span> Plot<span class="op">.</span><span class="fu">dot</span>(dt_unit<span class="op">,</span> Plot<span class="op">.</span><span class="fu">pointer</span>({<span class="dt">x</span><span class="op">:</span> <span class="st">"soil_unit_thickness"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"depth_top"</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> <span class="st">"red"</span><span class="op">,</span> <span class="dt">r</span><span class="op">:</span> <span class="dv">8</span>})) <span class="op">:</span> <span class="kw">null</span><span class="op">,</span></span>
+<span id="cb13-228"><a href="#cb13-228" aria-hidden="true" tabindex="-1"></a>    logo<span class="op">?</span> Plot<span class="op">.</span><span class="fu">image</span>([logo_ngi]<span class="op">,</span> { <span class="dt">src</span><span class="op">:</span> [logo_ngi]<span class="op">,</span> <span class="dt">frameAnchor</span><span class="op">:</span> <span class="st">"top-right"</span><span class="op">,</span> <span class="dt">dx</span><span class="op">:</span> <span class="op">-</span><span class="dv">40</span><span class="op">,</span> <span class="dt">dy</span><span class="op">:</span> <span class="dv">20</span><span class="op">,</span> <span class="dt">width</span><span class="op">:</span> logo_size }) <span class="op">:</span> <span class="kw">null</span><span class="op">,</span></span>
+<span id="cb13-229"><a href="#cb13-229" aria-hidden="true" tabindex="-1"></a>    <span class="co">// text</span></span>
+<span id="cb13-230"><a href="#cb13-230" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">text</span>([text_plot]<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> text_x<span class="op">,</span> <span class="dt">y</span><span class="op">:</span> text_y<span class="op">,</span> <span class="dt">fontSize</span><span class="op">:</span> <span class="dv">12</span><span class="op">,</span> <span class="dt">lineWidth</span><span class="op">:</span> <span class="dv">10</span><span class="op">,</span> <span class="dt">monospace</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> theme <span class="op">===</span> <span class="st">'light'</span> <span class="op">?</span> color_dark <span class="op">:</span> color_light<span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> theme <span class="op">===</span> <span class="st">'light'</span> <span class="op">?</span> color_light <span class="op">:</span> color_dark})</span>
+<span id="cb13-231"><a href="#cb13-231" aria-hidden="true" tabindex="-1"></a>  ]</span>
+<span id="cb13-232"><a href="#cb13-232" aria-hidden="true" tabindex="-1"></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-13" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<p>Scrollable plot:</p>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb14" data-startfrom="238" data-source-offset="0"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 237;"><span id="cb14-238"><a href="#cb14-238" aria-hidden="true" tabindex="-1"></a>long_scroll <span class="op">=</span> {</span>
+<span id="cb14-239"><a href="#cb14-239" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> outer_div <span class="op">=</span> d3</span>
+<span id="cb14-240"><a href="#cb14-240" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">create</span>(<span class="st">"div"</span>)</span>
+<span id="cb14-241"><a href="#cb14-241" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">style</span>(<span class="st">"width"</span><span class="op">,</span> <span class="st">"500px"</span>) <span class="co">// if commented, it fills-in all the page width</span></span>
+<span id="cb14-242"><a href="#cb14-242" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">style</span>(<span class="st">"height"</span><span class="op">,</span> <span class="st">"500px"</span>)</span>
+<span id="cb14-243"><a href="#cb14-243" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">style</span>(<span class="st">"overflow"</span><span class="op">,</span> <span class="st">"auto"</span>)<span class="op">;</span></span>
+<span id="cb14-244"><a href="#cb14-244" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> inner_div <span class="op">=</span> outer_div</span>
+<span id="cb14-245"><a href="#cb14-245" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">append</span>(<span class="st">"div"</span>)</span>
+<span id="cb14-246"><a href="#cb14-246" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">style</span>(<span class="st">"width"</span><span class="op">,</span> <span class="st">"5000px"</span>)</span>
+<span id="cb14-247"><a href="#cb14-247" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">style</span>(<span class="st">"height"</span><span class="op">,</span> <span class="st">"250px"</span>)<span class="op">;</span></span>
+<span id="cb14-248"><a href="#cb14-248" aria-hidden="true" tabindex="-1"></a>  inner_div<span class="op">.</span><span class="fu">append</span>(() <span class="kw">=&gt;</span></span>
+<span id="cb14-249"><a href="#cb14-249" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb14-250"><a href="#cb14-250" aria-hidden="true" tabindex="-1"></a>      <span class="dt">width</span><span class="op">:</span> <span class="dv">5000</span><span class="op">,</span></span>
+<span id="cb14-251"><a href="#cb14-251" aria-hidden="true" tabindex="-1"></a>      <span class="dt">height</span><span class="op">:</span> <span class="dv">200</span><span class="op">,</span></span>
+<span id="cb14-252"><a href="#cb14-252" aria-hidden="true" tabindex="-1"></a>      <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb14-253"><a href="#cb14-253" aria-hidden="true" tabindex="-1"></a>        Plot<span class="op">.</span><span class="fu">line</span>(</span>
+<span id="cb14-254"><a href="#cb14-254" aria-hidden="true" tabindex="-1"></a>          d3</span>
+<span id="cb14-255"><a href="#cb14-255" aria-hidden="true" tabindex="-1"></a>            <span class="op">.</span><span class="fu">range</span>(<span class="dv">0</span><span class="op">,</span> <span class="dv">2000</span><span class="op">,</span> <span class="fl">0.1</span>)</span>
+<span id="cb14-256"><a href="#cb14-256" aria-hidden="true" tabindex="-1"></a>            <span class="op">.</span><span class="fu">map</span>((t) <span class="kw">=&gt;</span> [t<span class="op">,</span> <span class="dv">50</span> <span class="op">+</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">sin</span>(t) <span class="op">+</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">sin</span>(<span class="fl">1.02</span> <span class="op">*</span> t)])</span>
+<span id="cb14-257"><a href="#cb14-257" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb14-258"><a href="#cb14-258" aria-hidden="true" tabindex="-1"></a>      ]</span>
+<span id="cb14-259"><a href="#cb14-259" aria-hidden="true" tabindex="-1"></a>    })</span>
+<span id="cb14-260"><a href="#cb14-260" aria-hidden="true" tabindex="-1"></a>  )<span class="op">;</span></span>
+<span id="cb14-261"><a href="#cb14-261" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-262"><a href="#cb14-262" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> outer_div<span class="op">.</span><span class="fu">node</span>()<span class="op">;</span></span>
+<span id="cb14-263"><a href="#cb14-263" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-14" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb15" data-startfrom="267" data-source-offset="0"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 266;"><span id="cb15-267"><a href="#cb15-267" aria-hidden="true" tabindex="-1"></a>long_scroll_2 <span class="op">=</span> {</span>
+<span id="cb15-268"><a href="#cb15-268" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> outer_div <span class="op">=</span> d3</span>
+<span id="cb15-269"><a href="#cb15-269" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">create</span>(<span class="st">"div"</span>)</span>
+<span id="cb15-270"><a href="#cb15-270" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">style</span>(<span class="st">"width"</span><span class="op">,</span> <span class="st">"500px"</span>) <span class="co">// if commented, it fills-in all the page width</span></span>
+<span id="cb15-271"><a href="#cb15-271" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">style</span>(<span class="st">"height"</span><span class="op">,</span> <span class="st">"500px"</span>)</span>
+<span id="cb15-272"><a href="#cb15-272" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">style</span>(<span class="st">"overflow"</span><span class="op">,</span> <span class="st">"auto"</span>)<span class="op">;</span></span>
+<span id="cb15-273"><a href="#cb15-273" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> inner_div <span class="op">=</span> outer_div</span>
+<span id="cb15-274"><a href="#cb15-274" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">append</span>(<span class="st">"div"</span>)</span>
+<span id="cb15-275"><a href="#cb15-275" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">style</span>(<span class="st">"width"</span><span class="op">,</span> <span class="st">"5000px"</span>)</span>
+<span id="cb15-276"><a href="#cb15-276" aria-hidden="true" tabindex="-1"></a>    <span class="co">//.style("height", "500px");</span></span>
+<span id="cb15-277"><a href="#cb15-277" aria-hidden="true" tabindex="-1"></a>  inner_div<span class="op">.</span><span class="fu">append</span>(() <span class="kw">=&gt;</span></span>
+<span id="cb15-278"><a href="#cb15-278" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb15-279"><a href="#cb15-279" aria-hidden="true" tabindex="-1"></a>    <span class="op">...</span>theme_01<span class="op">,</span></span>
+<span id="cb15-280"><a href="#cb15-280" aria-hidden="true" tabindex="-1"></a>    <span class="dt">width</span><span class="op">:</span> <span class="dv">5000</span><span class="op">,</span></span>
+<span id="cb15-281"><a href="#cb15-281" aria-hidden="true" tabindex="-1"></a>    <span class="dt">height</span><span class="op">:</span> <span class="dv">500</span><span class="op">,</span></span>
+<span id="cb15-282"><a href="#cb15-282" aria-hidden="true" tabindex="-1"></a>    <span class="dt">color</span><span class="op">:</span> {<span class="dt">legend</span><span class="op">:</span> <span class="kw">true</span>}<span class="op">,</span></span>
+<span id="cb15-283"><a href="#cb15-283" aria-hidden="true" tabindex="-1"></a>  <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb15-284"><a href="#cb15-284" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">frame</span>()<span class="op">,</span></span>
+<span id="cb15-285"><a href="#cb15-285" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">dot</span>(dt_unit<span class="op">,</span> {</span>
+<span id="cb15-286"><a href="#cb15-286" aria-hidden="true" tabindex="-1"></a>        <span class="dt">x</span><span class="op">:</span> <span class="st">'soil_unit_thickness'</span><span class="op">,</span> </span>
+<span id="cb15-287"><a href="#cb15-287" aria-hidden="true" tabindex="-1"></a>        <span class="dt">y</span><span class="op">:</span> <span class="st">'depth_top'</span><span class="op">,</span> </span>
+<span id="cb15-288"><a href="#cb15-288" aria-hidden="true" tabindex="-1"></a>        <span class="dt">fill</span><span class="op">:</span> <span class="st">'soil_type'</span><span class="op">,</span></span>
+<span id="cb15-289"><a href="#cb15-289" aria-hidden="true" tabindex="-1"></a>        <span class="dt">tip</span><span class="op">:</span> <span class="kw">true</span></span>
+<span id="cb15-290"><a href="#cb15-290" aria-hidden="true" tabindex="-1"></a>    })<span class="op">,</span></span>
+<span id="cb15-291"><a href="#cb15-291" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">crosshair</span>(dt_unit<span class="op">,</span> {</span>
+<span id="cb15-292"><a href="#cb15-292" aria-hidden="true" tabindex="-1"></a>        <span class="dt">x</span><span class="op">:</span> <span class="st">'soil_unit_thickness'</span><span class="op">,</span> </span>
+<span id="cb15-293"><a href="#cb15-293" aria-hidden="true" tabindex="-1"></a>        <span class="dt">y</span><span class="op">:</span> <span class="st">'depth_top'</span><span class="op">,</span></span>
+<span id="cb15-294"><a href="#cb15-294" aria-hidden="true" tabindex="-1"></a>        <span class="dt">color</span><span class="op">:</span> <span class="st">'soil_type'</span></span>
+<span id="cb15-295"><a href="#cb15-295" aria-hidden="true" tabindex="-1"></a>    })<span class="op">,</span></span>
+<span id="cb15-296"><a href="#cb15-296" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">dot</span>(dt_unit<span class="op">,</span> Plot<span class="op">.</span><span class="fu">pointer</span>({<span class="dt">x</span><span class="op">:</span> <span class="st">"soil_unit_thickness"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"depth_top"</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> <span class="st">"red"</span><span class="op">,</span> <span class="dt">r</span><span class="op">:</span> <span class="dv">8</span>}))<span class="op">,</span></span>
+<span id="cb15-297"><a href="#cb15-297" aria-hidden="true" tabindex="-1"></a>    logo<span class="op">?</span> Plot<span class="op">.</span><span class="fu">image</span>([logo_ngi]<span class="op">,</span> { <span class="dt">src</span><span class="op">:</span> [logo_ngi]<span class="op">,</span> <span class="dt">frameAnchor</span><span class="op">:</span> <span class="st">"top-right"</span><span class="op">,</span> <span class="dt">dx</span><span class="op">:</span> <span class="op">-</span><span class="dv">40</span><span class="op">,</span> <span class="dt">dy</span><span class="op">:</span> <span class="dv">20</span><span class="op">,</span> <span class="dt">width</span><span class="op">:</span> logo_size }) <span class="op">:</span> <span class="kw">null</span><span class="op">,</span></span>
+<span id="cb15-298"><a href="#cb15-298" aria-hidden="true" tabindex="-1"></a>    <span class="co">// text</span></span>
+<span id="cb15-299"><a href="#cb15-299" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">text</span>([text_plot]<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> text_x<span class="op">,</span> <span class="dt">y</span><span class="op">:</span> text_y<span class="op">,</span> <span class="dt">fontSize</span><span class="op">:</span> <span class="dv">12</span><span class="op">,</span> <span class="dt">lineWidth</span><span class="op">:</span> <span class="dv">10</span><span class="op">,</span> <span class="dt">monospace</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> theme <span class="op">===</span> <span class="st">'light'</span> <span class="op">?</span> color_dark <span class="op">:</span> color_light<span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> theme <span class="op">===</span> <span class="st">'light'</span> <span class="op">?</span> color_light <span class="op">:</span> color_dark})</span>
+<span id="cb15-300"><a href="#cb15-300" aria-hidden="true" tabindex="-1"></a>  ]</span>
+<span id="cb15-301"><a href="#cb15-301" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb15-302"><a href="#cb15-302" aria-hidden="true" tabindex="-1"></a>  )<span class="op">;</span></span>
+<span id="cb15-303"><a href="#cb15-303" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-304"><a href="#cb15-304" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> outer_div<span class="op">.</span><span class="fu">node</span>()<span class="op">;</span></span>
+<span id="cb15-305"><a href="#cb15-305" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-15" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+</div>
+<div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
+<p>Some text</p>
+</div>
+<div id="tabset-3-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-3-tab">
+<p>Some text</p>
+</div>
+<div id="tabset-3-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-4-tab">
+<p>Some texts</p>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb16" data-startfrom="330" data-source-offset="-0"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 329;"><span id="cb16-330"><a href="#cb16-330" aria-hidden="true" tabindex="-1"></a><span class="fu">html</span><span class="vs">`&lt;link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet"&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-16-1" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<div class="sourceCode cell-code hidden" id="cb17" data-startfrom="332" data-source-offset="-134"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 331;"><span id="cb17-332"><a href="#cb17-332" aria-hidden="true" tabindex="-1"></a>ns <span class="op">=</span> Inputs<span class="op">.</span><span class="fu">text</span>()<span class="op">.</span><span class="at">classList</span>[<span class="dv">0</span>]</span>
+<span id="cb17-333"><a href="#cb17-333" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-334"><a href="#cb17-334" aria-hidden="true" tabindex="-1"></a><span class="fu">html</span><span class="vs">`&lt;style&gt;</span></span>
+<span id="cb17-335"><a href="#cb17-335" aria-hidden="true" tabindex="-1"></a><span class="vs">/* all */</span></span>
+<span id="cb17-336"><a href="#cb17-336" aria-hidden="true" tabindex="-1"></a><span class="vs">.</span><span class="sc">${</span>ns<span class="sc">}</span><span class="vs">{</span></span>
+<span id="cb17-337"><a href="#cb17-337" aria-hidden="true" tabindex="-1"></a><span class="vs">  background-color: #f7f7f7;</span></span>
+<span id="cb17-338"><a href="#cb17-338" aria-hidden="true" tabindex="-1"></a><span class="vs">}</span></span>
+<span id="cb17-339"><a href="#cb17-339" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-340"><a href="#cb17-340" aria-hidden="true" tabindex="-1"></a><span class="vs">/* labels */</span></span>
+<span id="cb17-341"><a href="#cb17-341" aria-hidden="true" tabindex="-1"></a><span class="vs">.</span><span class="sc">${</span>ns<span class="sc">}</span><span class="vs"> label {</span></span>
+<span id="cb17-342"><a href="#cb17-342" aria-hidden="true" tabindex="-1"></a><span class="vs">  background-color: #f0f0f0;  </span></span>
+<span id="cb17-343"><a href="#cb17-343" aria-hidden="true" tabindex="-1"></a><span class="vs">  padding: 5px;</span></span>
+<span id="cb17-344"><a href="#cb17-344" aria-hidden="true" tabindex="-1"></a><span class="vs">  border-radius: 10px;</span></span>
+<span id="cb17-345"><a href="#cb17-345" aria-hidden="true" tabindex="-1"></a><span class="vs">  border-style: none;</span></span>
+<span id="cb17-346"><a href="#cb17-346" aria-hidden="true" tabindex="-1"></a><span class="vs">}</span></span>
+<span id="cb17-347"><a href="#cb17-347" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-348"><a href="#cb17-348" aria-hidden="true" tabindex="-1"></a><span class="vs">.</span><span class="sc">${</span>ns<span class="sc">}</span><span class="vs"> label:hover {</span></span>
+<span id="cb17-349"><a href="#cb17-349" aria-hidden="true" tabindex="-1"></a><span class="vs">  background-color: #ffefe0;</span></span>
+<span id="cb17-350"><a href="#cb17-350" aria-hidden="true" tabindex="-1"></a><span class="vs">  color: blue;</span></span>
+<span id="cb17-351"><a href="#cb17-351" aria-hidden="true" tabindex="-1"></a><span class="vs">}</span></span>
+<span id="cb17-352"><a href="#cb17-352" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-353"><a href="#cb17-353" aria-hidden="true" tabindex="-1"></a><span class="vs">/* right side */</span></span>
+<span id="cb17-354"><a href="#cb17-354" aria-hidden="true" tabindex="-1"></a><span class="vs">.</span><span class="sc">${</span>ns<span class="sc">}</span><span class="vs"> div {</span></span>
+<span id="cb17-355"><a href="#cb17-355" aria-hidden="true" tabindex="-1"></a><span class="vs">  background-color: #e5edff;</span></span>
+<span id="cb17-356"><a href="#cb17-356" aria-hidden="true" tabindex="-1"></a><span class="vs">  padding: 5px;</span></span>
+<span id="cb17-357"><a href="#cb17-357" aria-hidden="true" tabindex="-1"></a><span class="vs">  border-radius: 10px;</span></span>
+<span id="cb17-358"><a href="#cb17-358" aria-hidden="true" tabindex="-1"></a><span class="vs">}</span></span>
+<span id="cb17-359"><a href="#cb17-359" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-360"><a href="#cb17-360" aria-hidden="true" tabindex="-1"></a><span class="vs">/* right side: label */</span></span>
+<span id="cb17-361"><a href="#cb17-361" aria-hidden="true" tabindex="-1"></a><span class="vs">.</span><span class="sc">${</span>ns<span class="sc">}</span><span class="vs"> div label {</span></span>
+<span id="cb17-362"><a href="#cb17-362" aria-hidden="true" tabindex="-1"></a><span class="vs">  background-color: #ccdbff;</span></span>
+<span id="cb17-363"><a href="#cb17-363" aria-hidden="true" tabindex="-1"></a><span class="vs">  padding: 0px;</span></span>
+<span id="cb17-364"><a href="#cb17-364" aria-hidden="true" tabindex="-1"></a><span class="vs">  border-radius: 10px;</span></span>
+<span id="cb17-365"><a href="#cb17-365" aria-hidden="true" tabindex="-1"></a><span class="vs">  font-style: italic;</span></span>
+<span id="cb17-366"><a href="#cb17-366" aria-hidden="true" tabindex="-1"></a><span class="vs">}</span></span>
+<span id="cb17-367"><a href="#cb17-367" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-368"><a href="#cb17-368" aria-hidden="true" tabindex="-1"></a><span class="vs">.</span><span class="sc">${</span>ns<span class="sc">}</span><span class="vs"> div label:hover,</span></span>
+<span id="cb17-369"><a href="#cb17-369" aria-hidden="true" tabindex="-1"></a><span class="vs">.</span><span class="sc">${</span>ns<span class="sc">}</span><span class="vs"> div label:active,</span></span>
+<span id="cb17-370"><a href="#cb17-370" aria-hidden="true" tabindex="-1"></a><span class="vs">.</span><span class="sc">${</span>ns<span class="sc">}</span><span class="vs"> div label:focus {</span></span>
+<span id="cb17-371"><a href="#cb17-371" aria-hidden="true" tabindex="-1"></a><span class="vs">  background-color: #303030;</span></span>
+<span id="cb17-372"><a href="#cb17-372" aria-hidden="true" tabindex="-1"></a><span class="vs">  color: #f7f7f7;</span></span>
+<span id="cb17-373"><a href="#cb17-373" aria-hidden="true" tabindex="-1"></a><span class="vs">}</span></span>
+<span id="cb17-374"><a href="#cb17-374" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-375"><a href="#cb17-375" aria-hidden="true" tabindex="-1"></a><span class="vs">/* right side: input */</span></span>
+<span id="cb17-376"><a href="#cb17-376" aria-hidden="true" tabindex="-1"></a><span class="vs">.</span><span class="sc">${</span>ns<span class="sc">}</span><span class="vs"> input {</span></span>
+<span id="cb17-377"><a href="#cb17-377" aria-hidden="true" tabindex="-1"></a><span class="vs">  background-color: black;</span></span>
+<span id="cb17-378"><a href="#cb17-378" aria-hidden="true" tabindex="-1"></a><span class="vs">  color: white;</span></span>
+<span id="cb17-379"><a href="#cb17-379" aria-hidden="true" tabindex="-1"></a><span class="vs">  accent-color: tomato;</span></span>
+<span id="cb17-380"><a href="#cb17-380" aria-hidden="true" tabindex="-1"></a><span class="vs">  border-radius: 10px;</span></span>
+<span id="cb17-381"><a href="#cb17-381" aria-hidden="true" tabindex="-1"></a><span class="vs">  border-style: none;</span></span>
+<span id="cb17-382"><a href="#cb17-382" aria-hidden="true" tabindex="-1"></a><span class="vs">}</span></span>
+<span id="cb17-383"><a href="#cb17-383" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-384"><a href="#cb17-384" aria-hidden="true" tabindex="-1"></a><span class="vs">/* other */</span></span>
+<span id="cb17-385"><a href="#cb17-385" aria-hidden="true" tabindex="-1"></a><span class="vs">.</span><span class="sc">${</span>ns<span class="sc">}</span><span class="vs"> button {</span></span>
+<span id="cb17-386"><a href="#cb17-386" aria-hidden="true" tabindex="-1"></a><span class="vs">  background-color: green;</span></span>
+<span id="cb17-387"><a href="#cb17-387" aria-hidden="true" tabindex="-1"></a><span class="vs">  color: white;</span></span>
+<span id="cb17-388"><a href="#cb17-388" aria-hidden="true" tabindex="-1"></a><span class="vs">  border-radius: 10px;</span></span>
+<span id="cb17-389"><a href="#cb17-389" aria-hidden="true" tabindex="-1"></a><span class="vs">  border-style: none;</span></span>
+<span id="cb17-390"><a href="#cb17-390" aria-hidden="true" tabindex="-1"></a><span class="vs">}</span></span>
+<span id="cb17-391"><a href="#cb17-391" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-392"><a href="#cb17-392" aria-hidden="true" tabindex="-1"></a><span class="vs">.</span><span class="sc">${</span>ns<span class="sc">}</span><span class="vs"> select {</span></span>
+<span id="cb17-393"><a href="#cb17-393" aria-hidden="true" tabindex="-1"></a><span class="vs">  background-color: green;</span></span>
+<span id="cb17-394"><a href="#cb17-394" aria-hidden="true" tabindex="-1"></a><span class="vs">  color: white;</span></span>
+<span id="cb17-395"><a href="#cb17-395" aria-hidden="true" tabindex="-1"></a><span class="vs">  border-radius: 10px;</span></span>
+<span id="cb17-396"><a href="#cb17-396" aria-hidden="true" tabindex="-1"></a><span class="vs">  border-style: none;</span></span>
+<span id="cb17-397"><a href="#cb17-397" aria-hidden="true" tabindex="-1"></a><span class="vs">  width: 450px</span></span>
+<span id="cb17-398"><a href="#cb17-398" aria-hidden="true" tabindex="-1"></a><span class="vs">  font-family: "Roboto Mono";</span></span>
+<span id="cb17-399"><a href="#cb17-399" aria-hidden="true" tabindex="-1"></a><span class="vs">}</span></span>
+<span id="cb17-400"><a href="#cb17-400" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-401"><a href="#cb17-401" aria-hidden="true" tabindex="-1"></a><span class="vs">.</span><span class="sc">${</span>ns<span class="sc">}</span><span class="vs"> textarea {</span></span>
+<span id="cb17-402"><a href="#cb17-402" aria-hidden="true" tabindex="-1"></a><span class="vs">  background-color: black;</span></span>
+<span id="cb17-403"><a href="#cb17-403" aria-hidden="true" tabindex="-1"></a><span class="vs">  color: white;</span></span>
+<span id="cb17-404"><a href="#cb17-404" aria-hidden="true" tabindex="-1"></a><span class="vs">  border-radius: 10px;</span></span>
+<span id="cb17-405"><a href="#cb17-405" aria-hidden="true" tabindex="-1"></a><span class="vs">  border-style: none;</span></span>
+<span id="cb17-406"><a href="#cb17-406" aria-hidden="true" tabindex="-1"></a><span class="vs">}</span></span>
+<span id="cb17-407"><a href="#cb17-407" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-408"><a href="#cb17-408" aria-hidden="true" tabindex="-1"></a><span class="vs">.</span><span class="sc">${</span>ns<span class="sc">}</span><span class="vs"> table {</span></span>
+<span id="cb17-409"><a href="#cb17-409" aria-hidden="true" tabindex="-1"></a><span class="vs">  background-color: white;</span></span>
+<span id="cb17-410"><a href="#cb17-410" aria-hidden="true" tabindex="-1"></a><span class="vs">  color: gray;</span></span>
+<span id="cb17-411"><a href="#cb17-411" aria-hidden="true" tabindex="-1"></a><span class="vs">  border-radius: 10px;</span></span>
+<span id="cb17-412"><a href="#cb17-412" aria-hidden="true" tabindex="-1"></a><span class="vs">  border-style: none;</span></span>
+<span id="cb17-413"><a href="#cb17-413" aria-hidden="true" tabindex="-1"></a><span class="vs">  font-family: "Roboto Mono";</span></span>
+<span id="cb17-414"><a href="#cb17-414" aria-hidden="true" tabindex="-1"></a><span class="vs">  font-size: 10px;</span></span>
+<span id="cb17-415"><a href="#cb17-415" aria-hidden="true" tabindex="-1"></a><span class="vs">}</span></span>
+<span id="cb17-416"><a href="#cb17-416" aria-hidden="true" tabindex="-1"></a><span class="vs">&lt;/style&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-16-2" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-16-3" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+</div>
+<!-- -->
+<div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="sourceCode" id="cb18" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> ""</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="an">format:</span><span class="co"> </span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="co">    html:</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="co">        fontsize: 0.9em</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="co">        echo: false</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="co">        code-tools: true</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a><span class="co">        page-layout: custom</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a><span class="co">        toc: false</span></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a><span class="co">        margin-left: 35px</span></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a><span class="co">        margin-right: 35px</span></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a><span class="an">css:</span><span class="co"> styles.css</span></span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a><span class="an">execute:</span></span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a><span class="co">    echo: false</span></span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a><span class="co">    warning: false</span></span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a><span class="co">    error: false</span></span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a><span class="fu"># UTILS {.hidden}</span></span>
+<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-21"><a href="#cb18-21" aria-hidden="true" tabindex="-1"></a>Useful stuff which we don't want to show on screen.</span>
+<span id="cb18-22"><a href="#cb18-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-23"><a href="#cb18-23" aria-hidden="true" tabindex="-1"></a><span class="fu">## Plot update</span></span>
+<span id="cb18-24"><a href="#cb18-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-25"><a href="#cb18-25" aria-hidden="true" tabindex="-1"></a>Update to Plot latest version, by overwritting existing Plot version</span>
+<span id="cb18-26"><a href="#cb18-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-29"><a href="#cb18-29" aria-hidden="true" tabindex="-1"></a><span class="in">```{ojs}</span></span>
+<span id="cb18-30"><a href="#cb18-30" aria-hidden="true" tabindex="-1"></a>Plot <span class="op">=</span> <span class="im">import</span>(<span class="st">"https://esm.sh/@observablehq/plot"</span>) </span>
+<span id="cb18-31"><a href="#cb18-31" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-32"><a href="#cb18-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-33"><a href="#cb18-33" aria-hidden="true" tabindex="-1"></a><span class="fu">## Data</span></span>
+<span id="cb18-34"><a href="#cb18-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-37"><a href="#cb18-37" aria-hidden="true" tabindex="-1"></a><span class="in">```{ojs}</span></span>
+<span id="cb18-38"><a href="#cb18-38" aria-hidden="true" tabindex="-1"></a><span class="co">// read CSV files into OJS data</span></span>
+<span id="cb18-39"><a href="#cb18-39" aria-hidden="true" tabindex="-1"></a>dt_loc <span class="op">=</span> <span class="fu">FileAttachment</span>(<span class="st">'data-source/dt_loc.csv'</span>)<span class="op">.</span><span class="fu">csv</span>({<span class="dt">typed</span><span class="op">:</span> <span class="kw">true</span>}) <span class="co">// location</span></span>
+<span id="cb18-40"><a href="#cb18-40" aria-hidden="true" tabindex="-1"></a>dt_cpt_raw <span class="op">=</span> <span class="fu">FileAttachment</span>(<span class="st">'data-source/dt_cpt_raw.csv'</span>)<span class="op">.</span><span class="fu">csv</span>({<span class="dt">typed</span><span class="op">:</span> <span class="kw">true</span>}) <span class="co">// raw</span></span>
+<span id="cb18-41"><a href="#cb18-41" aria-hidden="true" tabindex="-1"></a>dt_cpt_int <span class="op">=</span> <span class="fu">FileAttachment</span>(<span class="st">'data-source/dt_cpt_int.csv'</span>)<span class="op">.</span><span class="fu">csv</span>({<span class="dt">typed</span><span class="op">:</span> <span class="kw">true</span>}) <span class="co">// interp</span></span>
+<span id="cb18-42"><a href="#cb18-42" aria-hidden="true" tabindex="-1"></a>dt_unit <span class="op">=</span> <span class="fu">FileAttachment</span>(<span class="st">'data-source/dt_unit.csv'</span>)<span class="op">.</span><span class="fu">csv</span>({<span class="dt">typed</span><span class="op">:</span> <span class="kw">true</span>}) <span class="co">// soil unit</span></span>
+<span id="cb18-43"><a href="#cb18-43" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-44"><a href="#cb18-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-45"><a href="#cb18-45" aria-hidden="true" tabindex="-1"></a><span class="fu">## Theme</span></span>
+<span id="cb18-46"><a href="#cb18-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-49"><a href="#cb18-49" aria-hidden="true" tabindex="-1"></a><span class="in">```{ojs}</span></span>
+<span id="cb18-50"><a href="#cb18-50" aria-hidden="true" tabindex="-1"></a><span class="co">// plot themes</span></span>
+<span id="cb18-51"><a href="#cb18-51" aria-hidden="true" tabindex="-1"></a>theme_01 <span class="op">=</span> ({</span>
+<span id="cb18-52"><a href="#cb18-52" aria-hidden="true" tabindex="-1"></a>    <span class="dt">style</span><span class="op">:</span> {</span>
+<span id="cb18-53"><a href="#cb18-53" aria-hidden="true" tabindex="-1"></a>        <span class="dt">fontSize</span><span class="op">:</span> <span class="dv">14</span><span class="op">,</span></span>
+<span id="cb18-54"><a href="#cb18-54" aria-hidden="true" tabindex="-1"></a>        <span class="dt">fontWeight</span><span class="op">:</span> <span class="dv">450</span><span class="op">,</span></span>
+<span id="cb18-55"><a href="#cb18-55" aria-hidden="true" tabindex="-1"></a>        <span class="dt">background</span><span class="op">:</span> theme <span class="op">===</span> <span class="st">'light'</span> <span class="op">?</span> color_light <span class="op">:</span> color_dark<span class="op">,</span></span>
+<span id="cb18-56"><a href="#cb18-56" aria-hidden="true" tabindex="-1"></a>        <span class="dt">color</span><span class="op">:</span> theme <span class="op">===</span> <span class="st">'light'</span> <span class="op">?</span> color_dark <span class="op">:</span> color_light<span class="op">,</span></span>
+<span id="cb18-57"><a href="#cb18-57" aria-hidden="true" tabindex="-1"></a>    }<span class="op">,</span></span>
+<span id="cb18-58"><a href="#cb18-58" aria-hidden="true" tabindex="-1"></a>    <span class="dt">marginLeft</span><span class="op">:</span> margin_left<span class="op">,</span></span>
+<span id="cb18-59"><a href="#cb18-59" aria-hidden="true" tabindex="-1"></a>    <span class="dt">marginRight</span><span class="op">:</span> <span class="dv">25</span><span class="op">,</span></span>
+<span id="cb18-60"><a href="#cb18-60" aria-hidden="true" tabindex="-1"></a>    <span class="dt">marginTop</span><span class="op">:</span> <span class="dv">25</span><span class="op">,</span></span>
+<span id="cb18-61"><a href="#cb18-61" aria-hidden="true" tabindex="-1"></a>    <span class="dt">marginBottom</span><span class="op">:</span> <span class="dv">50</span><span class="op">,</span></span>
+<span id="cb18-62"><a href="#cb18-62" aria-hidden="true" tabindex="-1"></a>    <span class="dt">grid</span><span class="op">:</span> <span class="kw">true</span></span>
+<span id="cb18-63"><a href="#cb18-63" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb18-64"><a href="#cb18-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-65"><a href="#cb18-65" aria-hidden="true" tabindex="-1"></a><span class="co">// parameters</span></span>
+<span id="cb18-66"><a href="#cb18-66" aria-hidden="true" tabindex="-1"></a>margin_left <span class="op">=</span> <span class="dv">50</span></span>
+<span id="cb18-67"><a href="#cb18-67" aria-hidden="true" tabindex="-1"></a>color_light <span class="op">=</span> <span class="st">'#f9f9f9'</span></span>
+<span id="cb18-68"><a href="#cb18-68" aria-hidden="true" tabindex="-1"></a>color_dark <span class="op">=</span> <span class="st">'#1c1c1c'</span></span>
+<span id="cb18-69"><a href="#cb18-69" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-70"><a href="#cb18-70" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-71"><a href="#cb18-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-74"><a href="#cb18-74" aria-hidden="true" tabindex="-1"></a><span class="in">```{ojs}</span></span>
+<span id="cb18-75"><a href="#cb18-75" aria-hidden="true" tabindex="-1"></a>theme_light <span class="op">=</span> ({</span>
+<span id="cb18-76"><a href="#cb18-76" aria-hidden="true" tabindex="-1"></a>    <span class="dt">style</span><span class="op">:</span> {</span>
+<span id="cb18-77"><a href="#cb18-77" aria-hidden="true" tabindex="-1"></a>        <span class="dt">fontSize</span><span class="op">:</span> <span class="dv">14</span><span class="op">,</span></span>
+<span id="cb18-78"><a href="#cb18-78" aria-hidden="true" tabindex="-1"></a>        <span class="dt">fontWeight</span><span class="op">:</span> <span class="dv">450</span><span class="op">,</span></span>
+<span id="cb18-79"><a href="#cb18-79" aria-hidden="true" tabindex="-1"></a>        <span class="dt">background</span><span class="op">:</span> color_light<span class="op">,</span></span>
+<span id="cb18-80"><a href="#cb18-80" aria-hidden="true" tabindex="-1"></a>        <span class="dt">color</span><span class="op">:</span> color_dark<span class="op">,</span></span>
+<span id="cb18-81"><a href="#cb18-81" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb18-82"><a href="#cb18-82" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb18-83"><a href="#cb18-83" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-84"><a href="#cb18-84" aria-hidden="true" tabindex="-1"></a>theme_dark <span class="op">=</span> ({</span>
+<span id="cb18-85"><a href="#cb18-85" aria-hidden="true" tabindex="-1"></a>    <span class="dt">style</span><span class="op">:</span> {</span>
+<span id="cb18-86"><a href="#cb18-86" aria-hidden="true" tabindex="-1"></a>        <span class="dt">fontSize</span><span class="op">:</span> <span class="dv">14</span><span class="op">,</span></span>
+<span id="cb18-87"><a href="#cb18-87" aria-hidden="true" tabindex="-1"></a>        <span class="dt">fontWeight</span><span class="op">:</span> <span class="dv">450</span><span class="op">,</span></span>
+<span id="cb18-88"><a href="#cb18-88" aria-hidden="true" tabindex="-1"></a>        <span class="dt">background</span><span class="op">:</span> color_dark<span class="op">,</span></span>
+<span id="cb18-89"><a href="#cb18-89" aria-hidden="true" tabindex="-1"></a>        <span class="dt">color</span><span class="op">:</span> color_light<span class="op">,</span></span>
+<span id="cb18-90"><a href="#cb18-90" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb18-91"><a href="#cb18-91" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb18-92"><a href="#cb18-92" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-93"><a href="#cb18-93" aria-hidden="true" tabindex="-1"></a><span class="fu">## Logo</span></span>
+<span id="cb18-94"><a href="#cb18-94" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-97"><a href="#cb18-97" aria-hidden="true" tabindex="-1"></a><span class="in">```{ojs}</span></span>
+<span id="cb18-98"><a href="#cb18-98" aria-hidden="true" tabindex="-1"></a>logo_ngi <span class="op">=</span> <span class="fu">FileAttachment</span>(<span class="st">"logo.svg"</span>)<span class="op">.</span><span class="fu">url</span>()</span>
+<span id="cb18-99"><a href="#cb18-99" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-100"><a href="#cb18-100" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-101"><a href="#cb18-101" aria-hidden="true" tabindex="-1"></a><span class="fu">## Imports</span></span>
+<span id="cb18-102"><a href="#cb18-102" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-105"><a href="#cb18-105" aria-hidden="true" tabindex="-1"></a><span class="in">```{ojs}</span></span>
+<span id="cb18-106"><a href="#cb18-106" aria-hidden="true" tabindex="-1"></a><span class="co">// import { addTooltips } from "@mkfreeman/plot-tooltip"</span></span>
+<span id="cb18-107"><a href="#cb18-107" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> {aq<span class="op">,</span> op} <span class="im">from</span> <span class="st">"@uwdata/arquero"</span></span>
+<span id="cb18-108"><a href="#cb18-108" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> {number} <span class="im">from</span> <span class="st">"@jashkenas/inputs"</span></span>
+<span id="cb18-109"><a href="#cb18-109" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-110"><a href="#cb18-110" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-111"><a href="#cb18-111" aria-hidden="true" tabindex="-1"></a><span class="fu">## CPTX  </span></span>
+<span id="cb18-112"><a href="#cb18-112" aria-hidden="true" tabindex="-1"></a>CPT explorer and more</span>
+<span id="cb18-113"><a href="#cb18-113" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-114"><a href="#cb18-114" aria-hidden="true" tabindex="-1"></a>::: {.panel-tabset}</span>
+<span id="cb18-115"><a href="#cb18-115" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-116"><a href="#cb18-116" aria-hidden="true" tabindex="-1"></a><span class="fu">### TAB 1</span></span>
+<span id="cb18-117"><a href="#cb18-117" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-118"><a href="#cb18-118" aria-hidden="true" tabindex="-1"></a>::: {.grid}</span>
+<span id="cb18-119"><a href="#cb18-119" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-120"><a href="#cb18-120" aria-hidden="true" tabindex="-1"></a>::: {.g-col-3}</span>
+<span id="cb18-121"><a href="#cb18-121" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-122"><a href="#cb18-122" aria-hidden="true" tabindex="-1"></a><span class="fu">### CONTROL</span></span>
+<span id="cb18-123"><a href="#cb18-123" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-124"><a href="#cb18-124" aria-hidden="true" tabindex="-1"></a>Control panel for what shows up on the right.</span>
+<span id="cb18-125"><a href="#cb18-125" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-126"><a href="#cb18-126" aria-hidden="true" tabindex="-1"></a>::: {.panel-tabset}</span>
+<span id="cb18-127"><a href="#cb18-127" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-128"><a href="#cb18-128" aria-hidden="true" tabindex="-1"></a><span class="fu">#### DATA</span></span>
+<span id="cb18-129"><a href="#cb18-129" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-130"><a href="#cb18-130" aria-hidden="true" tabindex="-1"></a>Control data</span>
+<span id="cb18-131"><a href="#cb18-131" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-132"><a href="#cb18-132" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb18-133"><a href="#cb18-133" aria-hidden="true" tabindex="-1"></a>\text{Location data:}</span>
+<span id="cb18-134"><a href="#cb18-134" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb18-135"><a href="#cb18-135" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-138"><a href="#cb18-138" aria-hidden="true" tabindex="-1"></a><span class="in">```{ojs}</span></span>
+<span id="cb18-139"><a href="#cb18-139" aria-hidden="true" tabindex="-1"></a>Inputs<span class="op">.</span><span class="fu">table</span>(dt_loc)</span>
+<span id="cb18-140"><a href="#cb18-140" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-141"><a href="#cb18-141" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-142"><a href="#cb18-142" aria-hidden="true" tabindex="-1"></a>*Soil units*</span>
+<span id="cb18-143"><a href="#cb18-143" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-146"><a href="#cb18-146" aria-hidden="true" tabindex="-1"></a><span class="in">```{ojs}</span></span>
+<span id="cb18-147"><a href="#cb18-147" aria-hidden="true" tabindex="-1"></a>Inputs<span class="op">.</span><span class="fu">table</span>(dt_unit)</span>
+<span id="cb18-148"><a href="#cb18-148" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-149"><a href="#cb18-149" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-150"><a href="#cb18-150" aria-hidden="true" tabindex="-1"></a>*From Arquero*</span>
+<span id="cb18-151"><a href="#cb18-151" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-154"><a href="#cb18-154" aria-hidden="true" tabindex="-1"></a><span class="in">```{ojs}</span></span>
+<span id="cb18-155"><a href="#cb18-155" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> aq<span class="op">.</span><span class="fu">from</span>(dt_unit) <span class="co">// data in arquero format</span></span>
+<span id="cb18-156"><a href="#cb18-156" aria-hidden="true" tabindex="-1"></a>dt<span class="op">.</span><span class="fu">view</span>(<span class="dv">5</span>)</span>
+<span id="cb18-157"><a href="#cb18-157" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-158"><a href="#cb18-158" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-159"><a href="#cb18-159" aria-hidden="true" tabindex="-1"></a><span class="fu">#### PLOT</span></span>
+<span id="cb18-160"><a href="#cb18-160" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-161"><a href="#cb18-161" aria-hidden="true" tabindex="-1"></a>**Control plot**</span>
+<span id="cb18-162"><a href="#cb18-162" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-165"><a href="#cb18-165" aria-hidden="true" tabindex="-1"></a><span class="in">```{ojs}</span></span>
+<span id="cb18-166"><a href="#cb18-166" aria-hidden="true" tabindex="-1"></a><span class="co">// theme</span></span>
+<span id="cb18-167"><a href="#cb18-167" aria-hidden="true" tabindex="-1"></a>viewof theme <span class="op">=</span> Inputs<span class="op">.</span><span class="fu">radio</span>([<span class="st">'light'</span><span class="op">,</span> <span class="st">'dark'</span>]<span class="op">,</span> {<span class="dt">label</span><span class="op">:</span> <span class="fu">html</span><span class="vs">`Top &lt;i&gt;Select theme:&lt;/i&gt;`</span><span class="op">,</span> <span class="dt">value</span><span class="op">:</span> <span class="st">'light'</span>}) <span class="co">// plot theme</span></span>
+<span id="cb18-168"><a href="#cb18-168" aria-hidden="true" tabindex="-1"></a>viewof logo <span class="op">=</span> Inputs<span class="op">.</span><span class="fu">toggle</span>({<span class="dt">label</span><span class="op">:</span> <span class="st">"Include logo?"</span>}) <span class="co">// logo</span></span>
+<span id="cb18-169"><a href="#cb18-169" aria-hidden="true" tabindex="-1"></a>viewof logo_size <span class="op">=</span> Inputs<span class="op">.</span><span class="fu">range</span>([<span class="dv">25</span><span class="op">,</span> <span class="dv">100</span>]<span class="op">,</span> {<span class="dt">value</span><span class="op">:</span> <span class="dv">75</span><span class="op">,</span> <span class="dt">label</span><span class="op">:</span> <span class="fu">html</span><span class="vs">`&lt;span style="background-color: rgb(250, 207, 57);"&gt;Logo size:&lt;/span&gt;`</span><span class="op">,</span> <span class="dt">step</span><span class="op">:</span> <span class="dv">5</span>})</span>
+<span id="cb18-170"><a href="#cb18-170" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-171"><a href="#cb18-171" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-172"><a href="#cb18-172" aria-hidden="true" tabindex="-1"></a>Include text</span>
+<span id="cb18-173"><a href="#cb18-173" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-176"><a href="#cb18-176" aria-hidden="true" tabindex="-1"></a><span class="in">```{ojs}</span></span>
+<span id="cb18-177"><a href="#cb18-177" aria-hidden="true" tabindex="-1"></a>viewof text_plot <span class="op">=</span> Inputs<span class="op">.</span><span class="fu">text</span>({<span class="dt">label</span><span class="op">:</span> <span class="st">"Text"</span><span class="op">,</span> <span class="dt">value</span><span class="op">:</span> <span class="st">"Text to plot..."</span>})</span>
+<span id="cb18-178"><a href="#cb18-178" aria-hidden="true" tabindex="-1"></a>viewof text_x <span class="op">=</span> Inputs<span class="op">.</span><span class="fu">range</span>([<span class="dv">0</span><span class="op">,</span> <span class="dv">100</span>]<span class="op">,</span> {<span class="dt">label</span><span class="op">:</span> <span class="fu">tex</span><span class="vs">`</span><span class="sc">\b</span><span class="vs">eta(</span><span class="sc">\t</span><span class="vs">extbf{r})`</span><span class="op">,</span> <span class="dt">value</span><span class="op">:</span> <span class="dv">1</span>})</span>
+<span id="cb18-179"><a href="#cb18-179" aria-hidden="true" tabindex="-1"></a>viewof text_y <span class="op">=</span> Inputs<span class="op">.</span><span class="fu">range</span>([<span class="dv">0</span><span class="op">,</span> <span class="dv">100</span>]<span class="op">,</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"Text-y"</span><span class="op">,</span> <span class="dt">value</span><span class="op">:</span> <span class="dv">1</span>}) <span class="co">// range to max value of data (set manually); same for step etc</span></span>
+<span id="cb18-180"><a href="#cb18-180" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-181"><a href="#cb18-181" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-182"><a href="#cb18-182" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;details&gt;</span></span>
+<span id="cb18-183"><a href="#cb18-183" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-184"><a href="#cb18-184" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;summary&gt;</span>Show info:<span class="kw">&lt;/summary&gt;</span></span>
+<span id="cb18-185"><a href="#cb18-185" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-186"><a href="#cb18-186" aria-hidden="true" tabindex="-1"></a>Write some text *here* so we describe **other** things. bla bla bla. The theme we are using is: **${theme}**</span>
+<span id="cb18-187"><a href="#cb18-187" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-188"><a href="#cb18-188" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;/details&gt;</span></span>
+<span id="cb18-189"><a href="#cb18-189" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-190"><a href="#cb18-190" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb18-191"><a href="#cb18-191" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-192"><a href="#cb18-192" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb18-193"><a href="#cb18-193" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-194"><a href="#cb18-194" aria-hidden="true" tabindex="-1"></a>::: {.g-col-9}</span>
+<span id="cb18-195"><a href="#cb18-195" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-196"><a href="#cb18-196" aria-hidden="true" tabindex="-1"></a><span class="fu">### VIEWER</span></span>
+<span id="cb18-197"><a href="#cb18-197" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-198"><a href="#cb18-198" aria-hidden="true" tabindex="-1"></a>Control panel for what shows up on the right.</span>
+<span id="cb18-199"><a href="#cb18-199" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-200"><a href="#cb18-200" aria-hidden="true" tabindex="-1"></a>::: {.panel-tabset}</span>
+<span id="cb18-201"><a href="#cb18-201" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-202"><a href="#cb18-202" aria-hidden="true" tabindex="-1"></a><span class="fu">#### VIEW 1</span></span>
+<span id="cb18-203"><a href="#cb18-203" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-204"><a href="#cb18-204" aria-hidden="true" tabindex="-1"></a>View plots</span>
+<span id="cb18-205"><a href="#cb18-205" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-208"><a href="#cb18-208" aria-hidden="true" tabindex="-1"></a><span class="in">```{ojs}</span></span>
+<span id="cb18-209"><a href="#cb18-209" aria-hidden="true" tabindex="-1"></a>Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb18-210"><a href="#cb18-210" aria-hidden="true" tabindex="-1"></a>    <span class="op">...</span>theme_01<span class="op">,</span></span>
+<span id="cb18-211"><a href="#cb18-211" aria-hidden="true" tabindex="-1"></a>    <span class="dt">width</span><span class="op">:</span> <span class="dv">750</span><span class="op">,</span></span>
+<span id="cb18-212"><a href="#cb18-212" aria-hidden="true" tabindex="-1"></a>    <span class="dt">height</span><span class="op">:</span> <span class="dv">500</span><span class="op">,</span></span>
+<span id="cb18-213"><a href="#cb18-213" aria-hidden="true" tabindex="-1"></a>    <span class="dt">color</span><span class="op">:</span> {<span class="dt">legend</span><span class="op">:</span> <span class="kw">true</span>}<span class="op">,</span></span>
+<span id="cb18-214"><a href="#cb18-214" aria-hidden="true" tabindex="-1"></a>  <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb18-215"><a href="#cb18-215" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">frame</span>()<span class="op">,</span></span>
+<span id="cb18-216"><a href="#cb18-216" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">dot</span>(dt_unit<span class="op">,</span> {</span>
+<span id="cb18-217"><a href="#cb18-217" aria-hidden="true" tabindex="-1"></a>        <span class="dt">x</span><span class="op">:</span> <span class="st">'soil_unit_thickness'</span><span class="op">,</span> </span>
+<span id="cb18-218"><a href="#cb18-218" aria-hidden="true" tabindex="-1"></a>        <span class="dt">y</span><span class="op">:</span> <span class="st">'depth_top'</span><span class="op">,</span> </span>
+<span id="cb18-219"><a href="#cb18-219" aria-hidden="true" tabindex="-1"></a>        <span class="dt">fill</span><span class="op">:</span> <span class="st">'soil_type'</span><span class="op">,</span> </span>
+<span id="cb18-220"><a href="#cb18-220" aria-hidden="true" tabindex="-1"></a>        <span class="dt">title</span><span class="op">:</span> (d) <span class="kw">=&gt;</span> <span class="vs">`</span><span class="sc">${</span>d<span class="op">.</span><span class="at">soil_unit</span><span class="sc">}</span><span class="vs"> </span><span class="sc">\n</span><span class="vs"> soil type: </span><span class="sc">${</span>d<span class="op">.</span><span class="at">soil_type</span><span class="sc">}</span><span class="vs">`</span></span>
+<span id="cb18-221"><a href="#cb18-221" aria-hidden="true" tabindex="-1"></a>    })<span class="op">,</span></span>
+<span id="cb18-222"><a href="#cb18-222" aria-hidden="true" tabindex="-1"></a>    logo<span class="op">?</span> Plot<span class="op">.</span><span class="fu">image</span>([logo_ngi]<span class="op">,</span> { <span class="dt">src</span><span class="op">:</span> [logo_ngi]<span class="op">,</span> <span class="dt">frameAnchor</span><span class="op">:</span> <span class="st">"top-right"</span><span class="op">,</span> <span class="dt">dx</span><span class="op">:</span> <span class="op">-</span><span class="dv">40</span><span class="op">,</span> <span class="dt">dy</span><span class="op">:</span> <span class="dv">20</span><span class="op">,</span> <span class="dt">width</span><span class="op">:</span> logo_size }) <span class="op">:</span> <span class="kw">null</span><span class="op">,</span></span>
+<span id="cb18-223"><a href="#cb18-223" aria-hidden="true" tabindex="-1"></a>    <span class="co">// text</span></span>
+<span id="cb18-224"><a href="#cb18-224" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">text</span>([text_plot]<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> text_x<span class="op">,</span> <span class="dt">y</span><span class="op">:</span> text_y<span class="op">,</span> <span class="dt">fontSize</span><span class="op">:</span> <span class="dv">12</span><span class="op">,</span> <span class="dt">lineWidth</span><span class="op">:</span> <span class="dv">10</span><span class="op">,</span> <span class="dt">monospace</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> theme <span class="op">===</span> <span class="st">'light'</span> <span class="op">?</span> color_dark <span class="op">:</span> color_light<span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> theme <span class="op">===</span> <span class="st">'light'</span> <span class="op">?</span> color_light <span class="op">:</span> color_dark})</span>
+<span id="cb18-225"><a href="#cb18-225" aria-hidden="true" tabindex="-1"></a>  ]</span>
+<span id="cb18-226"><a href="#cb18-226" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb18-227"><a href="#cb18-227" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-228"><a href="#cb18-228" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-229"><a href="#cb18-229" aria-hidden="true" tabindex="-1"></a><span class="fu">#### VIEW 2</span></span>
+<span id="cb18-230"><a href="#cb18-230" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-231"><a href="#cb18-231" aria-hidden="true" tabindex="-1"></a>View plots</span>
+<span id="cb18-232"><a href="#cb18-232" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-235"><a href="#cb18-235" aria-hidden="true" tabindex="-1"></a><span class="in">```{ojs}</span></span>
+<span id="cb18-236"><a href="#cb18-236" aria-hidden="true" tabindex="-1"></a>Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb18-237"><a href="#cb18-237" aria-hidden="true" tabindex="-1"></a>    <span class="op">...</span>theme_01<span class="op">,</span></span>
+<span id="cb18-238"><a href="#cb18-238" aria-hidden="true" tabindex="-1"></a>    <span class="dt">width</span><span class="op">:</span> <span class="dv">600</span><span class="op">,</span></span>
+<span id="cb18-239"><a href="#cb18-239" aria-hidden="true" tabindex="-1"></a>    <span class="dt">height</span><span class="op">:</span> <span class="dv">500</span><span class="op">,</span></span>
+<span id="cb18-240"><a href="#cb18-240" aria-hidden="true" tabindex="-1"></a>    <span class="dt">color</span><span class="op">:</span> {<span class="dt">legend</span><span class="op">:</span> <span class="kw">true</span>}<span class="op">,</span></span>
+<span id="cb18-241"><a href="#cb18-241" aria-hidden="true" tabindex="-1"></a>  <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb18-242"><a href="#cb18-242" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">frame</span>()<span class="op">,</span></span>
+<span id="cb18-243"><a href="#cb18-243" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">dot</span>(dt_unit<span class="op">,</span> {</span>
+<span id="cb18-244"><a href="#cb18-244" aria-hidden="true" tabindex="-1"></a>        <span class="dt">x</span><span class="op">:</span> <span class="st">'soil_unit_thickness'</span><span class="op">,</span> </span>
+<span id="cb18-245"><a href="#cb18-245" aria-hidden="true" tabindex="-1"></a>        <span class="dt">y</span><span class="op">:</span> <span class="st">'depth_top'</span><span class="op">,</span> </span>
+<span id="cb18-246"><a href="#cb18-246" aria-hidden="true" tabindex="-1"></a>        <span class="dt">fill</span><span class="op">:</span> <span class="st">'soil_type'</span><span class="op">,</span></span>
+<span id="cb18-247"><a href="#cb18-247" aria-hidden="true" tabindex="-1"></a>        <span class="dt">tip</span><span class="op">:</span> logo <span class="op">?</span> <span class="kw">true</span> <span class="op">:</span> <span class="kw">false</span></span>
+<span id="cb18-248"><a href="#cb18-248" aria-hidden="true" tabindex="-1"></a>    })<span class="op">,</span></span>
+<span id="cb18-249"><a href="#cb18-249" aria-hidden="true" tabindex="-1"></a>    logo <span class="op">?</span> Plot<span class="op">.</span><span class="fu">crosshair</span>(dt_unit<span class="op">,</span> {</span>
+<span id="cb18-250"><a href="#cb18-250" aria-hidden="true" tabindex="-1"></a>        <span class="dt">x</span><span class="op">:</span> <span class="st">'soil_unit_thickness'</span><span class="op">,</span> </span>
+<span id="cb18-251"><a href="#cb18-251" aria-hidden="true" tabindex="-1"></a>        <span class="dt">y</span><span class="op">:</span> <span class="st">'depth_top'</span><span class="op">,</span></span>
+<span id="cb18-252"><a href="#cb18-252" aria-hidden="true" tabindex="-1"></a>        <span class="dt">color</span><span class="op">:</span> <span class="st">'soil_type'</span></span>
+<span id="cb18-253"><a href="#cb18-253" aria-hidden="true" tabindex="-1"></a>    }) <span class="op">:</span> <span class="kw">null</span><span class="op">,</span></span>
+<span id="cb18-254"><a href="#cb18-254" aria-hidden="true" tabindex="-1"></a>    logo <span class="op">?</span> Plot<span class="op">.</span><span class="fu">dot</span>(dt_unit<span class="op">,</span> Plot<span class="op">.</span><span class="fu">pointer</span>({<span class="dt">x</span><span class="op">:</span> <span class="st">"soil_unit_thickness"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"depth_top"</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> <span class="st">"red"</span><span class="op">,</span> <span class="dt">r</span><span class="op">:</span> <span class="dv">8</span>})) <span class="op">:</span> <span class="kw">null</span><span class="op">,</span></span>
+<span id="cb18-255"><a href="#cb18-255" aria-hidden="true" tabindex="-1"></a>    logo<span class="op">?</span> Plot<span class="op">.</span><span class="fu">image</span>([logo_ngi]<span class="op">,</span> { <span class="dt">src</span><span class="op">:</span> [logo_ngi]<span class="op">,</span> <span class="dt">frameAnchor</span><span class="op">:</span> <span class="st">"top-right"</span><span class="op">,</span> <span class="dt">dx</span><span class="op">:</span> <span class="op">-</span><span class="dv">40</span><span class="op">,</span> <span class="dt">dy</span><span class="op">:</span> <span class="dv">20</span><span class="op">,</span> <span class="dt">width</span><span class="op">:</span> logo_size }) <span class="op">:</span> <span class="kw">null</span><span class="op">,</span></span>
+<span id="cb18-256"><a href="#cb18-256" aria-hidden="true" tabindex="-1"></a>    <span class="co">// text</span></span>
+<span id="cb18-257"><a href="#cb18-257" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">text</span>([text_plot]<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> text_x<span class="op">,</span> <span class="dt">y</span><span class="op">:</span> text_y<span class="op">,</span> <span class="dt">fontSize</span><span class="op">:</span> <span class="dv">12</span><span class="op">,</span> <span class="dt">lineWidth</span><span class="op">:</span> <span class="dv">10</span><span class="op">,</span> <span class="dt">monospace</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> theme <span class="op">===</span> <span class="st">'light'</span> <span class="op">?</span> color_dark <span class="op">:</span> color_light<span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> theme <span class="op">===</span> <span class="st">'light'</span> <span class="op">?</span> color_light <span class="op">:</span> color_dark})</span>
+<span id="cb18-258"><a href="#cb18-258" aria-hidden="true" tabindex="-1"></a>  ]</span>
+<span id="cb18-259"><a href="#cb18-259" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb18-260"><a href="#cb18-260" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-261"><a href="#cb18-261" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-262"><a href="#cb18-262" aria-hidden="true" tabindex="-1"></a>Scrollable plot:</span>
+<span id="cb18-263"><a href="#cb18-263" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-266"><a href="#cb18-266" aria-hidden="true" tabindex="-1"></a><span class="in">```{ojs}</span></span>
+<span id="cb18-267"><a href="#cb18-267" aria-hidden="true" tabindex="-1"></a>long_scroll <span class="op">=</span> {</span>
+<span id="cb18-268"><a href="#cb18-268" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> outer_div <span class="op">=</span> d3</span>
+<span id="cb18-269"><a href="#cb18-269" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">create</span>(<span class="st">"div"</span>)</span>
+<span id="cb18-270"><a href="#cb18-270" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">style</span>(<span class="st">"width"</span><span class="op">,</span> <span class="st">"500px"</span>) <span class="co">// if commented, it fills-in all the page width</span></span>
+<span id="cb18-271"><a href="#cb18-271" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">style</span>(<span class="st">"height"</span><span class="op">,</span> <span class="st">"500px"</span>)</span>
+<span id="cb18-272"><a href="#cb18-272" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">style</span>(<span class="st">"overflow"</span><span class="op">,</span> <span class="st">"auto"</span>)<span class="op">;</span></span>
+<span id="cb18-273"><a href="#cb18-273" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> inner_div <span class="op">=</span> outer_div</span>
+<span id="cb18-274"><a href="#cb18-274" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">append</span>(<span class="st">"div"</span>)</span>
+<span id="cb18-275"><a href="#cb18-275" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">style</span>(<span class="st">"width"</span><span class="op">,</span> <span class="st">"5000px"</span>)</span>
+<span id="cb18-276"><a href="#cb18-276" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">style</span>(<span class="st">"height"</span><span class="op">,</span> <span class="st">"250px"</span>)<span class="op">;</span></span>
+<span id="cb18-277"><a href="#cb18-277" aria-hidden="true" tabindex="-1"></a>  inner_div<span class="op">.</span><span class="fu">append</span>(() <span class="kw">=&gt;</span></span>
+<span id="cb18-278"><a href="#cb18-278" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb18-279"><a href="#cb18-279" aria-hidden="true" tabindex="-1"></a>      <span class="dt">width</span><span class="op">:</span> <span class="dv">5000</span><span class="op">,</span></span>
+<span id="cb18-280"><a href="#cb18-280" aria-hidden="true" tabindex="-1"></a>      <span class="dt">height</span><span class="op">:</span> <span class="dv">200</span><span class="op">,</span></span>
+<span id="cb18-281"><a href="#cb18-281" aria-hidden="true" tabindex="-1"></a>      <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb18-282"><a href="#cb18-282" aria-hidden="true" tabindex="-1"></a>        Plot<span class="op">.</span><span class="fu">line</span>(</span>
+<span id="cb18-283"><a href="#cb18-283" aria-hidden="true" tabindex="-1"></a>          d3</span>
+<span id="cb18-284"><a href="#cb18-284" aria-hidden="true" tabindex="-1"></a>            <span class="op">.</span><span class="fu">range</span>(<span class="dv">0</span><span class="op">,</span> <span class="dv">2000</span><span class="op">,</span> <span class="fl">0.1</span>)</span>
+<span id="cb18-285"><a href="#cb18-285" aria-hidden="true" tabindex="-1"></a>            <span class="op">.</span><span class="fu">map</span>((t) <span class="kw">=&gt;</span> [t<span class="op">,</span> <span class="dv">50</span> <span class="op">+</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">sin</span>(t) <span class="op">+</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">sin</span>(<span class="fl">1.02</span> <span class="op">*</span> t)])</span>
+<span id="cb18-286"><a href="#cb18-286" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb18-287"><a href="#cb18-287" aria-hidden="true" tabindex="-1"></a>      ]</span>
+<span id="cb18-288"><a href="#cb18-288" aria-hidden="true" tabindex="-1"></a>    })</span>
+<span id="cb18-289"><a href="#cb18-289" aria-hidden="true" tabindex="-1"></a>  )<span class="op">;</span></span>
+<span id="cb18-290"><a href="#cb18-290" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-291"><a href="#cb18-291" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> outer_div<span class="op">.</span><span class="fu">node</span>()<span class="op">;</span></span>
+<span id="cb18-292"><a href="#cb18-292" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb18-293"><a href="#cb18-293" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-294"><a href="#cb18-294" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-297"><a href="#cb18-297" aria-hidden="true" tabindex="-1"></a><span class="in">```{ojs}</span></span>
+<span id="cb18-298"><a href="#cb18-298" aria-hidden="true" tabindex="-1"></a>long_scroll_2 <span class="op">=</span> {</span>
+<span id="cb18-299"><a href="#cb18-299" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> outer_div <span class="op">=</span> d3</span>
+<span id="cb18-300"><a href="#cb18-300" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">create</span>(<span class="st">"div"</span>)</span>
+<span id="cb18-301"><a href="#cb18-301" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">style</span>(<span class="st">"width"</span><span class="op">,</span> <span class="st">"500px"</span>) <span class="co">// if commented, it fills-in all the page width</span></span>
+<span id="cb18-302"><a href="#cb18-302" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">style</span>(<span class="st">"height"</span><span class="op">,</span> <span class="st">"500px"</span>)</span>
+<span id="cb18-303"><a href="#cb18-303" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">style</span>(<span class="st">"overflow"</span><span class="op">,</span> <span class="st">"auto"</span>)<span class="op">;</span></span>
+<span id="cb18-304"><a href="#cb18-304" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> inner_div <span class="op">=</span> outer_div</span>
+<span id="cb18-305"><a href="#cb18-305" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">append</span>(<span class="st">"div"</span>)</span>
+<span id="cb18-306"><a href="#cb18-306" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">style</span>(<span class="st">"width"</span><span class="op">,</span> <span class="st">"5000px"</span>)</span>
+<span id="cb18-307"><a href="#cb18-307" aria-hidden="true" tabindex="-1"></a>    <span class="co">//.style("height", "500px");</span></span>
+<span id="cb18-308"><a href="#cb18-308" aria-hidden="true" tabindex="-1"></a>  inner_div<span class="op">.</span><span class="fu">append</span>(() <span class="kw">=&gt;</span></span>
+<span id="cb18-309"><a href="#cb18-309" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb18-310"><a href="#cb18-310" aria-hidden="true" tabindex="-1"></a>    <span class="op">...</span>theme_01<span class="op">,</span></span>
+<span id="cb18-311"><a href="#cb18-311" aria-hidden="true" tabindex="-1"></a>    <span class="dt">width</span><span class="op">:</span> <span class="dv">5000</span><span class="op">,</span></span>
+<span id="cb18-312"><a href="#cb18-312" aria-hidden="true" tabindex="-1"></a>    <span class="dt">height</span><span class="op">:</span> <span class="dv">500</span><span class="op">,</span></span>
+<span id="cb18-313"><a href="#cb18-313" aria-hidden="true" tabindex="-1"></a>    <span class="dt">color</span><span class="op">:</span> {<span class="dt">legend</span><span class="op">:</span> <span class="kw">true</span>}<span class="op">,</span></span>
+<span id="cb18-314"><a href="#cb18-314" aria-hidden="true" tabindex="-1"></a>  <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb18-315"><a href="#cb18-315" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">frame</span>()<span class="op">,</span></span>
+<span id="cb18-316"><a href="#cb18-316" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">dot</span>(dt_unit<span class="op">,</span> {</span>
+<span id="cb18-317"><a href="#cb18-317" aria-hidden="true" tabindex="-1"></a>        <span class="dt">x</span><span class="op">:</span> <span class="st">'soil_unit_thickness'</span><span class="op">,</span> </span>
+<span id="cb18-318"><a href="#cb18-318" aria-hidden="true" tabindex="-1"></a>        <span class="dt">y</span><span class="op">:</span> <span class="st">'depth_top'</span><span class="op">,</span> </span>
+<span id="cb18-319"><a href="#cb18-319" aria-hidden="true" tabindex="-1"></a>        <span class="dt">fill</span><span class="op">:</span> <span class="st">'soil_type'</span><span class="op">,</span></span>
+<span id="cb18-320"><a href="#cb18-320" aria-hidden="true" tabindex="-1"></a>        <span class="dt">tip</span><span class="op">:</span> <span class="kw">true</span></span>
+<span id="cb18-321"><a href="#cb18-321" aria-hidden="true" tabindex="-1"></a>    })<span class="op">,</span></span>
+<span id="cb18-322"><a href="#cb18-322" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">crosshair</span>(dt_unit<span class="op">,</span> {</span>
+<span id="cb18-323"><a href="#cb18-323" aria-hidden="true" tabindex="-1"></a>        <span class="dt">x</span><span class="op">:</span> <span class="st">'soil_unit_thickness'</span><span class="op">,</span> </span>
+<span id="cb18-324"><a href="#cb18-324" aria-hidden="true" tabindex="-1"></a>        <span class="dt">y</span><span class="op">:</span> <span class="st">'depth_top'</span><span class="op">,</span></span>
+<span id="cb18-325"><a href="#cb18-325" aria-hidden="true" tabindex="-1"></a>        <span class="dt">color</span><span class="op">:</span> <span class="st">'soil_type'</span></span>
+<span id="cb18-326"><a href="#cb18-326" aria-hidden="true" tabindex="-1"></a>    })<span class="op">,</span></span>
+<span id="cb18-327"><a href="#cb18-327" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">dot</span>(dt_unit<span class="op">,</span> Plot<span class="op">.</span><span class="fu">pointer</span>({<span class="dt">x</span><span class="op">:</span> <span class="st">"soil_unit_thickness"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"depth_top"</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> <span class="st">"red"</span><span class="op">,</span> <span class="dt">r</span><span class="op">:</span> <span class="dv">8</span>}))<span class="op">,</span></span>
+<span id="cb18-328"><a href="#cb18-328" aria-hidden="true" tabindex="-1"></a>    logo<span class="op">?</span> Plot<span class="op">.</span><span class="fu">image</span>([logo_ngi]<span class="op">,</span> { <span class="dt">src</span><span class="op">:</span> [logo_ngi]<span class="op">,</span> <span class="dt">frameAnchor</span><span class="op">:</span> <span class="st">"top-right"</span><span class="op">,</span> <span class="dt">dx</span><span class="op">:</span> <span class="op">-</span><span class="dv">40</span><span class="op">,</span> <span class="dt">dy</span><span class="op">:</span> <span class="dv">20</span><span class="op">,</span> <span class="dt">width</span><span class="op">:</span> logo_size }) <span class="op">:</span> <span class="kw">null</span><span class="op">,</span></span>
+<span id="cb18-329"><a href="#cb18-329" aria-hidden="true" tabindex="-1"></a>    <span class="co">// text</span></span>
+<span id="cb18-330"><a href="#cb18-330" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">text</span>([text_plot]<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> text_x<span class="op">,</span> <span class="dt">y</span><span class="op">:</span> text_y<span class="op">,</span> <span class="dt">fontSize</span><span class="op">:</span> <span class="dv">12</span><span class="op">,</span> <span class="dt">lineWidth</span><span class="op">:</span> <span class="dv">10</span><span class="op">,</span> <span class="dt">monospace</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> theme <span class="op">===</span> <span class="st">'light'</span> <span class="op">?</span> color_dark <span class="op">:</span> color_light<span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> theme <span class="op">===</span> <span class="st">'light'</span> <span class="op">?</span> color_light <span class="op">:</span> color_dark})</span>
+<span id="cb18-331"><a href="#cb18-331" aria-hidden="true" tabindex="-1"></a>  ]</span>
+<span id="cb18-332"><a href="#cb18-332" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb18-333"><a href="#cb18-333" aria-hidden="true" tabindex="-1"></a>  )<span class="op">;</span></span>
+<span id="cb18-334"><a href="#cb18-334" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-335"><a href="#cb18-335" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> outer_div<span class="op">.</span><span class="fu">node</span>()<span class="op">;</span></span>
+<span id="cb18-336"><a href="#cb18-336" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb18-337"><a href="#cb18-337" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-338"><a href="#cb18-338" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-339"><a href="#cb18-339" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb18-340"><a href="#cb18-340" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-341"><a href="#cb18-341" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb18-342"><a href="#cb18-342" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-343"><a href="#cb18-343" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb18-344"><a href="#cb18-344" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-345"><a href="#cb18-345" aria-hidden="true" tabindex="-1"></a><span class="fu">### TAB 2</span></span>
+<span id="cb18-346"><a href="#cb18-346" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-347"><a href="#cb18-347" aria-hidden="true" tabindex="-1"></a>Some text</span>
+<span id="cb18-348"><a href="#cb18-348" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-349"><a href="#cb18-349" aria-hidden="true" tabindex="-1"></a><span class="fu">### TAB 3</span></span>
+<span id="cb18-350"><a href="#cb18-350" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-351"><a href="#cb18-351" aria-hidden="true" tabindex="-1"></a>Some text</span>
+<span id="cb18-352"><a href="#cb18-352" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-353"><a href="#cb18-353" aria-hidden="true" tabindex="-1"></a><span class="fu">### TAB 4</span></span>
+<span id="cb18-354"><a href="#cb18-354" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-355"><a href="#cb18-355" aria-hidden="true" tabindex="-1"></a>Some texts</span>
+<span id="cb18-356"><a href="#cb18-356" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-357"><a href="#cb18-357" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb18-358"><a href="#cb18-358" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-361"><a href="#cb18-361" aria-hidden="true" tabindex="-1"></a><span class="in">```{ojs}</span></span>
+<span id="cb18-362"><a href="#cb18-362" aria-hidden="true" tabindex="-1"></a><span class="fu">html</span><span class="vs">`&lt;link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet"&gt;`</span></span>
+<span id="cb18-363"><a href="#cb18-363" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-364"><a href="#cb18-364" aria-hidden="true" tabindex="-1"></a>ns <span class="op">=</span> Inputs<span class="op">.</span><span class="fu">text</span>()<span class="op">.</span><span class="at">classList</span>[<span class="dv">0</span>]</span>
+<span id="cb18-365"><a href="#cb18-365" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-366"><a href="#cb18-366" aria-hidden="true" tabindex="-1"></a><span class="fu">html</span><span class="vs">`&lt;style&gt;</span></span>
+<span id="cb18-367"><a href="#cb18-367" aria-hidden="true" tabindex="-1"></a><span class="vs">/* all */</span></span>
+<span id="cb18-368"><a href="#cb18-368" aria-hidden="true" tabindex="-1"></a><span class="vs">.</span><span class="sc">${</span>ns<span class="sc">}</span><span class="vs">{</span></span>
+<span id="cb18-369"><a href="#cb18-369" aria-hidden="true" tabindex="-1"></a><span class="vs">  background-color: #f7f7f7;</span></span>
+<span id="cb18-370"><a href="#cb18-370" aria-hidden="true" tabindex="-1"></a><span class="vs">}</span></span>
+<span id="cb18-371"><a href="#cb18-371" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-372"><a href="#cb18-372" aria-hidden="true" tabindex="-1"></a><span class="vs">/* labels */</span></span>
+<span id="cb18-373"><a href="#cb18-373" aria-hidden="true" tabindex="-1"></a><span class="vs">.</span><span class="sc">${</span>ns<span class="sc">}</span><span class="vs"> label {</span></span>
+<span id="cb18-374"><a href="#cb18-374" aria-hidden="true" tabindex="-1"></a><span class="vs">  background-color: #f0f0f0;  </span></span>
+<span id="cb18-375"><a href="#cb18-375" aria-hidden="true" tabindex="-1"></a><span class="vs">  padding: 5px;</span></span>
+<span id="cb18-376"><a href="#cb18-376" aria-hidden="true" tabindex="-1"></a><span class="vs">  border-radius: 10px;</span></span>
+<span id="cb18-377"><a href="#cb18-377" aria-hidden="true" tabindex="-1"></a><span class="vs">  border-style: none;</span></span>
+<span id="cb18-378"><a href="#cb18-378" aria-hidden="true" tabindex="-1"></a><span class="vs">}</span></span>
+<span id="cb18-379"><a href="#cb18-379" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-380"><a href="#cb18-380" aria-hidden="true" tabindex="-1"></a><span class="vs">.</span><span class="sc">${</span>ns<span class="sc">}</span><span class="vs"> label:hover {</span></span>
+<span id="cb18-381"><a href="#cb18-381" aria-hidden="true" tabindex="-1"></a><span class="vs">  background-color: #ffefe0;</span></span>
+<span id="cb18-382"><a href="#cb18-382" aria-hidden="true" tabindex="-1"></a><span class="vs">  color: blue;</span></span>
+<span id="cb18-383"><a href="#cb18-383" aria-hidden="true" tabindex="-1"></a><span class="vs">}</span></span>
+<span id="cb18-384"><a href="#cb18-384" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-385"><a href="#cb18-385" aria-hidden="true" tabindex="-1"></a><span class="vs">/* right side */</span></span>
+<span id="cb18-386"><a href="#cb18-386" aria-hidden="true" tabindex="-1"></a><span class="vs">.</span><span class="sc">${</span>ns<span class="sc">}</span><span class="vs"> div {</span></span>
+<span id="cb18-387"><a href="#cb18-387" aria-hidden="true" tabindex="-1"></a><span class="vs">  background-color: #e5edff;</span></span>
+<span id="cb18-388"><a href="#cb18-388" aria-hidden="true" tabindex="-1"></a><span class="vs">  padding: 5px;</span></span>
+<span id="cb18-389"><a href="#cb18-389" aria-hidden="true" tabindex="-1"></a><span class="vs">  border-radius: 10px;</span></span>
+<span id="cb18-390"><a href="#cb18-390" aria-hidden="true" tabindex="-1"></a><span class="vs">}</span></span>
+<span id="cb18-391"><a href="#cb18-391" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-392"><a href="#cb18-392" aria-hidden="true" tabindex="-1"></a><span class="vs">/* right side: label */</span></span>
+<span id="cb18-393"><a href="#cb18-393" aria-hidden="true" tabindex="-1"></a><span class="vs">.</span><span class="sc">${</span>ns<span class="sc">}</span><span class="vs"> div label {</span></span>
+<span id="cb18-394"><a href="#cb18-394" aria-hidden="true" tabindex="-1"></a><span class="vs">  background-color: #ccdbff;</span></span>
+<span id="cb18-395"><a href="#cb18-395" aria-hidden="true" tabindex="-1"></a><span class="vs">  padding: 0px;</span></span>
+<span id="cb18-396"><a href="#cb18-396" aria-hidden="true" tabindex="-1"></a><span class="vs">  border-radius: 10px;</span></span>
+<span id="cb18-397"><a href="#cb18-397" aria-hidden="true" tabindex="-1"></a><span class="vs">  font-style: italic;</span></span>
+<span id="cb18-398"><a href="#cb18-398" aria-hidden="true" tabindex="-1"></a><span class="vs">}</span></span>
+<span id="cb18-399"><a href="#cb18-399" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-400"><a href="#cb18-400" aria-hidden="true" tabindex="-1"></a><span class="vs">.</span><span class="sc">${</span>ns<span class="sc">}</span><span class="vs"> div label:hover,</span></span>
+<span id="cb18-401"><a href="#cb18-401" aria-hidden="true" tabindex="-1"></a><span class="vs">.</span><span class="sc">${</span>ns<span class="sc">}</span><span class="vs"> div label:active,</span></span>
+<span id="cb18-402"><a href="#cb18-402" aria-hidden="true" tabindex="-1"></a><span class="vs">.</span><span class="sc">${</span>ns<span class="sc">}</span><span class="vs"> div label:focus {</span></span>
+<span id="cb18-403"><a href="#cb18-403" aria-hidden="true" tabindex="-1"></a><span class="vs">  background-color: #303030;</span></span>
+<span id="cb18-404"><a href="#cb18-404" aria-hidden="true" tabindex="-1"></a><span class="vs">  color: #f7f7f7;</span></span>
+<span id="cb18-405"><a href="#cb18-405" aria-hidden="true" tabindex="-1"></a><span class="vs">}</span></span>
+<span id="cb18-406"><a href="#cb18-406" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-407"><a href="#cb18-407" aria-hidden="true" tabindex="-1"></a><span class="vs">/* right side: input */</span></span>
+<span id="cb18-408"><a href="#cb18-408" aria-hidden="true" tabindex="-1"></a><span class="vs">.</span><span class="sc">${</span>ns<span class="sc">}</span><span class="vs"> input {</span></span>
+<span id="cb18-409"><a href="#cb18-409" aria-hidden="true" tabindex="-1"></a><span class="vs">  background-color: black;</span></span>
+<span id="cb18-410"><a href="#cb18-410" aria-hidden="true" tabindex="-1"></a><span class="vs">  color: white;</span></span>
+<span id="cb18-411"><a href="#cb18-411" aria-hidden="true" tabindex="-1"></a><span class="vs">  accent-color: tomato;</span></span>
+<span id="cb18-412"><a href="#cb18-412" aria-hidden="true" tabindex="-1"></a><span class="vs">  border-radius: 10px;</span></span>
+<span id="cb18-413"><a href="#cb18-413" aria-hidden="true" tabindex="-1"></a><span class="vs">  border-style: none;</span></span>
+<span id="cb18-414"><a href="#cb18-414" aria-hidden="true" tabindex="-1"></a><span class="vs">}</span></span>
+<span id="cb18-415"><a href="#cb18-415" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-416"><a href="#cb18-416" aria-hidden="true" tabindex="-1"></a><span class="vs">/* other */</span></span>
+<span id="cb18-417"><a href="#cb18-417" aria-hidden="true" tabindex="-1"></a><span class="vs">.</span><span class="sc">${</span>ns<span class="sc">}</span><span class="vs"> button {</span></span>
+<span id="cb18-418"><a href="#cb18-418" aria-hidden="true" tabindex="-1"></a><span class="vs">  background-color: green;</span></span>
+<span id="cb18-419"><a href="#cb18-419" aria-hidden="true" tabindex="-1"></a><span class="vs">  color: white;</span></span>
+<span id="cb18-420"><a href="#cb18-420" aria-hidden="true" tabindex="-1"></a><span class="vs">  border-radius: 10px;</span></span>
+<span id="cb18-421"><a href="#cb18-421" aria-hidden="true" tabindex="-1"></a><span class="vs">  border-style: none;</span></span>
+<span id="cb18-422"><a href="#cb18-422" aria-hidden="true" tabindex="-1"></a><span class="vs">}</span></span>
+<span id="cb18-423"><a href="#cb18-423" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-424"><a href="#cb18-424" aria-hidden="true" tabindex="-1"></a><span class="vs">.</span><span class="sc">${</span>ns<span class="sc">}</span><span class="vs"> select {</span></span>
+<span id="cb18-425"><a href="#cb18-425" aria-hidden="true" tabindex="-1"></a><span class="vs">  background-color: green;</span></span>
+<span id="cb18-426"><a href="#cb18-426" aria-hidden="true" tabindex="-1"></a><span class="vs">  color: white;</span></span>
+<span id="cb18-427"><a href="#cb18-427" aria-hidden="true" tabindex="-1"></a><span class="vs">  border-radius: 10px;</span></span>
+<span id="cb18-428"><a href="#cb18-428" aria-hidden="true" tabindex="-1"></a><span class="vs">  border-style: none;</span></span>
+<span id="cb18-429"><a href="#cb18-429" aria-hidden="true" tabindex="-1"></a><span class="vs">  width: 450px</span></span>
+<span id="cb18-430"><a href="#cb18-430" aria-hidden="true" tabindex="-1"></a><span class="vs">  font-family: "Roboto Mono";</span></span>
+<span id="cb18-431"><a href="#cb18-431" aria-hidden="true" tabindex="-1"></a><span class="vs">}</span></span>
+<span id="cb18-432"><a href="#cb18-432" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-433"><a href="#cb18-433" aria-hidden="true" tabindex="-1"></a><span class="vs">.</span><span class="sc">${</span>ns<span class="sc">}</span><span class="vs"> textarea {</span></span>
+<span id="cb18-434"><a href="#cb18-434" aria-hidden="true" tabindex="-1"></a><span class="vs">  background-color: black;</span></span>
+<span id="cb18-435"><a href="#cb18-435" aria-hidden="true" tabindex="-1"></a><span class="vs">  color: white;</span></span>
+<span id="cb18-436"><a href="#cb18-436" aria-hidden="true" tabindex="-1"></a><span class="vs">  border-radius: 10px;</span></span>
+<span id="cb18-437"><a href="#cb18-437" aria-hidden="true" tabindex="-1"></a><span class="vs">  border-style: none;</span></span>
+<span id="cb18-438"><a href="#cb18-438" aria-hidden="true" tabindex="-1"></a><span class="vs">}</span></span>
+<span id="cb18-439"><a href="#cb18-439" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-440"><a href="#cb18-440" aria-hidden="true" tabindex="-1"></a><span class="vs">.</span><span class="sc">${</span>ns<span class="sc">}</span><span class="vs"> table {</span></span>
+<span id="cb18-441"><a href="#cb18-441" aria-hidden="true" tabindex="-1"></a><span class="vs">  background-color: white;</span></span>
+<span id="cb18-442"><a href="#cb18-442" aria-hidden="true" tabindex="-1"></a><span class="vs">  color: gray;</span></span>
+<span id="cb18-443"><a href="#cb18-443" aria-hidden="true" tabindex="-1"></a><span class="vs">  border-radius: 10px;</span></span>
+<span id="cb18-444"><a href="#cb18-444" aria-hidden="true" tabindex="-1"></a><span class="vs">  border-style: none;</span></span>
+<span id="cb18-445"><a href="#cb18-445" aria-hidden="true" tabindex="-1"></a><span class="vs">  font-family: "Roboto Mono";</span></span>
+<span id="cb18-446"><a href="#cb18-446" aria-hidden="true" tabindex="-1"></a><span class="vs">  font-size: 10px;</span></span>
+<span id="cb18-447"><a href="#cb18-447" aria-hidden="true" tabindex="-1"></a><span class="vs">}</span></span>
+<span id="cb18-448"><a href="#cb18-448" aria-hidden="true" tabindex="-1"></a><span class="vs">&lt;/style&gt;`</span></span>
+<span id="cb18-449"><a href="#cb18-449" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div></div></div></div></div>
+<script type="ojs-module-contents">
+{"contents":[
+  {"methodName":"interpret","inline":"true","source":"htl.html`<span>${theme}</span>`", "cellName":"ojs-element-id-1"}
+]}
+</script>
+</section>
+</section>
+
+
+
+<script type="ojs-module-contents">
+{"contents":[{"methodName":"interpret","cellName":"ojs-cell-1","inline":false,"source":"Plot = import(\"https://esm.sh/@observablehq/plot\") \r\n"},{"methodName":"interpret","cellName":"ojs-cell-2","inline":false,"source":"// read CSV files into OJS data\r\ndt_loc = FileAttachment('data-source/dt_loc.csv').csv({typed: true}) // location\r\ndt_cpt_raw = FileAttachment('data-source/dt_cpt_raw.csv').csv({typed: true}) // raw\r\ndt_cpt_int = FileAttachment('data-source/dt_cpt_int.csv').csv({typed: true}) // interp\r\ndt_unit = FileAttachment('data-source/dt_unit.csv').csv({typed: true}) // soil unit\r\n"},{"methodName":"interpret","cellName":"ojs-cell-3","inline":false,"source":"// plot themes\r\ntheme_01 = ({\r\n    style: {\r\n        fontSize: 14,\r\n        fontWeight: 450,\r\n        background: theme === 'light' ? color_light : color_dark,\r\n        color: theme === 'light' ? color_dark : color_light,\r\n    },\r\n    marginLeft: margin_left,\r\n    marginRight: 25,\r\n    marginTop: 25,\r\n    marginBottom: 50,\r\n    grid: true\r\n})\r\n\r\n// parameters\r\nmargin_left = 50\r\ncolor_light = '#f9f9f9'\r\ncolor_dark = '#1c1c1c'\r\n"},{"methodName":"interpret","cellName":"ojs-cell-4","inline":false,"source":"theme_light = ({\r\n    style: {\r\n        fontSize: 14,\r\n        fontWeight: 450,\r\n        background: color_light,\r\n        color: color_dark,\r\n    }\r\n})\r\n\r\ntheme_dark = ({\r\n    style: {\r\n        fontSize: 14,\r\n        fontWeight: 450,\r\n        background: color_dark,\r\n        color: color_light,\r\n    }\r\n})\r\n"},{"methodName":"interpret","cellName":"ojs-cell-5","inline":false,"source":"logo_ngi = FileAttachment(\"logo.svg\").url()\r\n"},{"methodName":"interpret","cellName":"ojs-cell-6","inline":false,"source":"// import { addTooltips } from \"@mkfreeman/plot-tooltip\"\r\nimport {aq, op} from \"@uwdata/arquero\"\r\nimport {number} from \"@jashkenas/inputs\"\r\n"},{"methodName":"interpret","cellName":"ojs-cell-7","inline":false,"source":"Inputs.table(dt_loc)\r\n"},{"methodName":"interpret","cellName":"ojs-cell-8","inline":false,"source":"Inputs.table(dt_unit)\r\n"},{"methodName":"interpret","cellName":"ojs-cell-9","inline":false,"source":"dt = aq.from(dt_unit) // data in arquero format\r\ndt.view(5)\r\n"},{"methodName":"interpret","cellName":"ojs-cell-10","inline":false,"source":"// theme\r\nviewof theme = Inputs.radio(['light', 'dark'], {label: html`Top <i>Select theme:</i>`, value: 'light'}) // plot theme\r\nviewof logo = Inputs.toggle({label: \"Include logo?\"}) // logo\r\nviewof logo_size = Inputs.range([25, 100], {value: 75, label: html`<span style=\"background-color: rgb(250, 207, 57);\">Logo size:</span>`, step: 5})\r\n"},{"methodName":"interpret","cellName":"ojs-cell-11","inline":false,"source":"viewof text_plot = Inputs.text({label: \"Text\", value: \"Text to plot...\"})\r\nviewof text_x = Inputs.range([0, 100], {label: tex`\\beta(\\textbf{r})`, value: 1})\r\nviewof text_y = Inputs.range([0, 100], {label: \"Text-y\", value: 1}) // range to max value of data (set manually); same for step etc\r\n"},{"methodName":"interpret","cellName":"ojs-cell-12","inline":false,"source":"Plot.plot({\r\n    ...theme_01,\r\n    width: 750,\r\n    height: 500,\r\n    color: {legend: true},\r\n  marks: [\r\n    Plot.frame(),\r\n    Plot.dot(dt_unit, {\r\n        x: 'soil_unit_thickness', \r\n        y: 'depth_top', \r\n        fill: 'soil_type', \r\n        title: (d) => `${d.soil_unit} \\n soil type: ${d.soil_type}`\r\n    }),\r\n    logo? Plot.image([logo_ngi], { src: [logo_ngi], frameAnchor: \"top-right\", dx: -40, dy: 20, width: logo_size }) : null,\r\n    // text\r\n    Plot.text([text_plot], {x: text_x, y: text_y, fontSize: 12, lineWidth: 10, monospace: true, fill: theme === 'light' ? color_dark : color_light, stroke: theme === 'light' ? color_light : color_dark})\r\n  ]\r\n})\r\n"},{"methodName":"interpret","cellName":"ojs-cell-13","inline":false,"source":"Plot.plot({\r\n    ...theme_01,\r\n    width: 600,\r\n    height: 500,\r\n    color: {legend: true},\r\n  marks: [\r\n    Plot.frame(),\r\n    Plot.dot(dt_unit, {\r\n        x: 'soil_unit_thickness', \r\n        y: 'depth_top', \r\n        fill: 'soil_type',\r\n        tip: logo ? true : false\r\n    }),\r\n    logo ? Plot.crosshair(dt_unit, {\r\n        x: 'soil_unit_thickness', \r\n        y: 'depth_top',\r\n        color: 'soil_type'\r\n    }) : null,\r\n    logo ? Plot.dot(dt_unit, Plot.pointer({x: \"soil_unit_thickness\", y: \"depth_top\", fill: \"red\", r: 8})) : null,\r\n    logo? Plot.image([logo_ngi], { src: [logo_ngi], frameAnchor: \"top-right\", dx: -40, dy: 20, width: logo_size }) : null,\r\n    // text\r\n    Plot.text([text_plot], {x: text_x, y: text_y, fontSize: 12, lineWidth: 10, monospace: true, fill: theme === 'light' ? color_dark : color_light, stroke: theme === 'light' ? color_light : color_dark})\r\n  ]\r\n})\r\n"},{"methodName":"interpret","cellName":"ojs-cell-14","inline":false,"source":"long_scroll = {\r\n  let outer_div = d3\r\n    .create(\"div\")\r\n    .style(\"width\", \"500px\") // if commented, it fills-in all the page width\r\n    .style(\"height\", \"500px\")\r\n    .style(\"overflow\", \"auto\");\r\n  let inner_div = outer_div\r\n    .append(\"div\")\r\n    .style(\"width\", \"5000px\")\r\n    .style(\"height\", \"250px\");\r\n  inner_div.append(() =>\r\n    Plot.plot({\r\n      width: 5000,\r\n      height: 200,\r\n      marks: [\r\n        Plot.line(\r\n          d3\r\n            .range(0, 2000, 0.1)\r\n            .map((t) => [t, 50 + Math.sin(t) + Math.sin(1.02 * t)])\r\n        )\r\n      ]\r\n    })\r\n  );\r\n\r\n  return outer_div.node();\r\n}\r\n"},{"methodName":"interpret","cellName":"ojs-cell-15","inline":false,"source":"long_scroll_2 = {\r\n  let outer_div = d3\r\n    .create(\"div\")\r\n    .style(\"width\", \"500px\") // if commented, it fills-in all the page width\r\n    .style(\"height\", \"500px\")\r\n    .style(\"overflow\", \"auto\");\r\n  let inner_div = outer_div\r\n    .append(\"div\")\r\n    .style(\"width\", \"5000px\")\r\n    //.style(\"height\", \"500px\");\r\n  inner_div.append(() =>\r\n    Plot.plot({\r\n    ...theme_01,\r\n    width: 5000,\r\n    height: 500,\r\n    color: {legend: true},\r\n  marks: [\r\n    Plot.frame(),\r\n    Plot.dot(dt_unit, {\r\n        x: 'soil_unit_thickness', \r\n        y: 'depth_top', \r\n        fill: 'soil_type',\r\n        tip: true\r\n    }),\r\n    Plot.crosshair(dt_unit, {\r\n        x: 'soil_unit_thickness', \r\n        y: 'depth_top',\r\n        color: 'soil_type'\r\n    }),\r\n    Plot.dot(dt_unit, Plot.pointer({x: \"soil_unit_thickness\", y: \"depth_top\", fill: \"red\", r: 8})),\r\n    logo? Plot.image([logo_ngi], { src: [logo_ngi], frameAnchor: \"top-right\", dx: -40, dy: 20, width: logo_size }) : null,\r\n    // text\r\n    Plot.text([text_plot], {x: text_x, y: text_y, fontSize: 12, lineWidth: 10, monospace: true, fill: theme === 'light' ? color_dark : color_light, stroke: theme === 'light' ? color_light : color_dark})\r\n  ]\r\n})\r\n  );\r\n\r\n  return outer_div.node();\r\n}\r\n"},{"methodName":"interpret","cellName":"ojs-cell-16","inline":false,"source":"html`<link href=\"https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,400;0,700;1,400&display=swap\" rel=\"stylesheet\">`\r\n\r\nns = Inputs.text().classList[0]\r\n\r\nhtml`<style>\r\n/* all */\r\n.${ns}{\r\n  background-color: #f7f7f7;\r\n}\r\n\r\n/* labels */\r\n.${ns} label {\r\n  background-color: #f0f0f0;  \r\n  padding: 5px;\r\n  border-radius: 10px;\r\n  border-style: none;\r\n}\r\n\r\n.${ns} label:hover {\r\n  background-color: #ffefe0;\r\n  color: blue;\r\n}\r\n\r\n/* right side */\r\n.${ns} div {\r\n  background-color: #e5edff;\r\n  padding: 5px;\r\n  border-radius: 10px;\r\n}\r\n\r\n/* right side: label */\r\n.${ns} div label {\r\n  background-color: #ccdbff;\r\n  padding: 0px;\r\n  border-radius: 10px;\r\n  font-style: italic;\r\n}\r\n\r\n.${ns} div label:hover,\r\n.${ns} div label:active,\r\n.${ns} div label:focus {\r\n  background-color: #303030;\r\n  color: #f7f7f7;\r\n}\r\n\r\n/* right side: input */\r\n.${ns} input {\r\n  background-color: black;\r\n  color: white;\r\n  accent-color: tomato;\r\n  border-radius: 10px;\r\n  border-style: none;\r\n}\r\n\r\n/* other */\r\n.${ns} button {\r\n  background-color: green;\r\n  color: white;\r\n  border-radius: 10px;\r\n  border-style: none;\r\n}\r\n\r\n.${ns} select {\r\n  background-color: green;\r\n  color: white;\r\n  border-radius: 10px;\r\n  border-style: none;\r\n  width: 450px\r\n  font-family: \"Roboto Mono\";\r\n}\r\n\r\n.${ns} textarea {\r\n  background-color: black;\r\n  color: white;\r\n  border-radius: 10px;\r\n  border-style: none;\r\n}\r\n\r\n.${ns} table {\r\n  background-color: white;\r\n  color: gray;\r\n  border-radius: 10px;\r\n  border-style: none;\r\n  font-family: \"Roboto Mono\";\r\n  font-size: 10px;\r\n}\r\n</style>`\r\n"},{"methodName":"interpretQuiet","source":"shinyInput('theme')"},{"methodName":"interpretQuiet","source":"shinyInput('logo')"},{"methodName":"interpretQuiet","source":"shinyInput('logo_size')"},{"methodName":"interpretQuiet","source":"shinyInput('text_plot')"},{"methodName":"interpretQuiet","source":"shinyInput('text_x')"},{"methodName":"interpretQuiet","source":"shinyInput('text_y')"}]}
+</script>
+<script type="module">
+if (window.location.protocol === "file:") { alert("The OJS runtime does not work with file:// URLs. Please use a web server to view this document."); }
+window._ojs.paths.runtimeToDoc = "../../..";
+window._ojs.paths.runtimeToRoot = "../../..";
+window._ojs.paths.docToRoot = "";
+window._ojs.selfContained = false;
+window._ojs.runtime.interpretFromScriptTags();
+</script>
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  const viewSource = window.document.getElementById('quarto-view-source') ||
+                     window.document.getElementById('quarto-code-tools-source');
+  if (viewSource) {
+    const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+    viewSource.addEventListener("click", function(e) {
+      if (sourceUrl) {
+        // rstudio viewer pane
+        if (/\bcapabilities=\b/.test(window.location)) {
+          window.open(sourceUrl);
+        } else {
+          window.location.href = sourceUrl;
+        }
+      } else {
+        const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+        modal.show();
+      }
+      return false;
+    });
+  }
+  function toggleCodeHandler(show) {
+    return function(e) {
+      const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+      for (let i=0; i<detailsSrc.length; i++) {
+        const details = detailsSrc[i].parentElement;
+        if (show) {
+          details.open = true;
+        } else {
+          details.removeAttribute("open");
+        }
+      }
+      const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+      const fromCls = show ? "hidden" : "unhidden";
+      const toCls = show ? "unhidden" : "hidden";
+      for (let i=0; i<cellCodeDivs.length; i++) {
+        const codeDiv = cellCodeDivs[i];
+        if (codeDiv.classList.contains(fromCls)) {
+          codeDiv.classList.remove(fromCls);
+          codeDiv.classList.add(toCls);
+        } 
+      }
+      return false;
+    }
+  }
+  const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+  if (hideAllCode) {
+    hideAllCode.addEventListener("click", toggleCodeHandler(false));
+  }
+  const showAllCode = window.document.getElementById("quarto-show-all-code");
+  if (showAllCode) {
+    showAllCode.addEventListener("click", toggleCodeHandler(true));
+  }
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /container fluid -->
+
+
+
+</body></html>

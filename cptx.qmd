@@ -1,0 +1,487 @@
+---
+title: "CPTUX 🚀"
+subtitle: "Visual and numerical exploration of CPTU data and more"
+format: 
+    html:
+        #theme: custom.scss
+        fontsize: 0.9rem
+        echo: false
+        code-tools: false
+        page-layout: custom
+        toc: false
+        margin-left: 35px
+        margin-right: 35px
+#css: styles.css
+execute:
+    echo: false
+    warning: false
+    error: false
+---
+
+# UTILS {.hidden}
+
+Useful stuff which we don't want to show on screen.
+
+## Plot update
+
+Update to Plot latest version, by overwritting existing Plot version.
+
+```{ojs}
+Plot = import("https://esm.sh/@observablehq/plot") 
+```
+
+## Theme
+
+Create a base theme which allows switching between *light* and *dark* themes. Light theme the default one.
+
+```{ojs}
+// plot themes
+theme_base = ({
+    style: {
+        fontSize: font_size,
+        fontWeight: font_weight,
+        background: theme === 'light' ? color_light : color_dark,
+        color: theme === 'light' ? color_dark : color_light,
+    },
+    marginLeft: margin_left,
+    marginRight: 25,
+    marginTop: 25,
+    marginBottom: 50,
+    grid: true
+})
+
+// parameters
+font_size = 14
+font_weight = 500
+margin_left = 50
+col_light = '#f9f9f9'
+col_dark = '#1c1c1c'
+```
+
+## Logo
+
+Import NGI logo to use in plots.
+
+```{ojs}
+logo_ngi = FileAttachment("logo.svg").url()
+```
+
+## Imports
+
+Importing external libraries and functions.
+
+```{ojs}
+import { aq, op } from "@uwdata/arquero"
+import { build_samples } from '@mcmcclur/adaptive-plotter'
+import { rasterize } from "@mbostock/saving-svg"
+import { serialize } from "@mbostock/saving-svg"
+import { number } from "@jashkenas/inputs"
+import { getIconSvg } from '@saneef/feather-icons'
+```
+
+Create tabset panels
+
+#
+
+::: {#main-panels .panel-tabset .nav-pills}
+
+## Data {{< fa folder >}}
+
+::: {#controls .panel-sidebar}
+
+`Data upload and other control & filter options` {{< fa folder >}}
+
+<details>
+  <summary>Show controls:</summary>
+
+```{ojs}
+viewof dt_cptu_file = Inputs.file({label: "Load CSV file", accept: ".csv", required: true})
+//dt_cptu = dt_cptu_file.csv({typed: true}) uncomment later
+dt_cptu = FileAttachment('data-source/dt_cpt_int.csv').csv({typed: true}) // interp
+
+viewof filt_type = Inputs.select([null].concat(dt_cptu.map(d => d.soil_type)), {label: "Soil type:", multiple: true, sort: true, unique: true})
+
+viewof filt_group = Inputs.select([null].concat(dt_cptu.map(d => d.soil_group)), {label: "Soil group:", multiple: true, sort: true, unique: true})
+
+viewof filt_unit = Inputs.select([null].concat(dt_cptu.map(d => d.soil_unit)), {label: "Soil unit:", multiple: true, sort: true, unique: true})
+
+viewof filt_loc = Inputs.select([null].concat(dt_cptu.map(d => d.loc_id)), {label: "Location ID:", multiple: true, sort: true, unique: true})
+```
+
+</details>
+
+:::
+
+::: {#view .panel-fill}
+
+`View CPTU data in table`
+
+<details>
+  <summary>Show table:</summary>
+
+```{ojs}
+// create arquero df 
+dt = aq
+    .from(dt_cptu)
+    // select only columns we need
+    .select(aq.range(0, 72), 141, 142)
+
+// table
+viewof dt_cptu_table = Inputs.table(dt, {rows: 15})
+```
+
+</details>
+
+::: {.grid}
+
+::: {#tables .g-col-6 .theme-new}
+
+`Tables`
+
+```{ojs}
+// summary info on data
+dt_count_cols = dt.numCols()
+dt_count_rows = dt.numRows()
+dt_count_type = dt.select("soil_type").dedupe().array("soil_type").length
+dt_count_group = dt.select("soil_group").dedupe().array("soil_group").length
+dt_count_unit = dt.select("soil_unit").dedupe().array("soil_unit").length
+dt_count_loc = dt.select("loc_id").dedupe().array("loc_id").length
+```
+
+*General info:*
+
+```{ojs}
+stats_info = aq.table({
+  item: ['Columns', 'Rows', 'Soil types', 'Soil groups', 'Soil units', 'Locations'],
+  value: [dt_count_cols, dt_count_rows, dt_count_type, dt_count_group, dt_count_unit, dt_count_loc]
+})
+
+Inputs.table(stats_info)
+```
+
+*Descriptive statistics:*
+
+::: {#desc-stats .panel-tabset}
+
+### `Soil type`
+
+```{ojs}
+stats_type = dt
+  .groupby("soil_type")
+  .rollup({
+    count: d => op.count(),
+    depth_min: d => Math.round(op.min(d.depth) * 100) / 100,
+    depth_max: d => Math.round(op.max(d.depth) * 100) / 100,
+    qc_min: d => Math.round(op.min(d.qc) * 100) / 100,
+    qc_q05: d => Math.round(op.quantile(d.qc, 0.05) * 100) / 100,
+    qc_q10: d => Math.round(op.quantile(d.qc, 0.10) * 100) / 100,
+    qc_med: d => Math.round(op.median(d.qc) * 100) / 100,
+    qc_q90: d => Math.round(op.quantile(d.qc, 0.90) * 100) / 100,
+    qc_q95: d => Math.round(op.quantile(d.qc, 0.95) * 100) / 100,
+    qc_max: d => Math.round(op.max(d.qc) * 100) / 100,
+  })
+
+Inputs.table(stats_type, {
+    format: {
+        depth_min: d => d.toFixed(2),
+        depth_max: d => d.toFixed(2),
+        qc_min: d => d.toFixed(2),
+        qc_q05: d => d.toFixed(2),
+        qc_q10: d => d.toFixed(2),
+        qc_med: d => d.toFixed(2),
+        qc_q90: d => d.toFixed(2),
+        qc_q95: d => d.toFixed(2),
+        qc_max: d => d.toFixed(2),
+  }
+})
+```
+
+```{ojs}
+md`Download data here: ${getIconSvg("download")}`
+
+import { desc_stats } from "./utils.js"
+desc_stats(dt, "soil_type").view()
+```
+
+### `Soil group`
+
+```{ojs}
+stats_group = dt
+  .groupby("soil_group")
+  .rollup({
+    count: d => op.count(),
+    depth_min: d => Math.round(op.min(d.depth) * 100) / 100,
+    depth_max: d => Math.round(op.max(d.depth) * 100) / 100,
+    qc_min: d => Math.round(op.min(d.qc) * 100) / 100,
+    qc_q05: d => Math.round(op.quantile(d.qc, 0.05) * 100) / 100,
+    qc_q10: d => Math.round(op.quantile(d.qc, 0.10) * 100) / 100,
+    qc_med: d => Math.round(op.median(d.qc) * 100) / 100,
+    qc_q90: d => Math.round(op.quantile(d.qc, 0.90) * 100) / 100,
+    qc_q95: d => Math.round(op.quantile(d.qc, 0.95) * 100) / 100,
+    qc_max: d => Math.round(op.max(d.qc) * 100) / 100,
+  })
+
+Inputs.table(stats_group, {
+    format: {
+        depth_min: d => d.toFixed(2),
+        depth_max: d => d.toFixed(2),
+        qc_min: d => d.toFixed(2),
+        qc_q05: d => d.toFixed(2),
+        qc_q10: d => d.toFixed(2),
+        qc_med: d => d.toFixed(2),
+        qc_q90: d => d.toFixed(2),
+        qc_q95: d => d.toFixed(2),
+        qc_max: d => d.toFixed(2),
+  }
+})
+```
+
+```{ojs}
+desc_stats(dt, "soil_group").view()
+```
+
+### `Soil unit`
+
+```{ojs}
+stats_unit = dt
+  .groupby("soil_unit")
+  .rollup({
+    count: d => op.count(),
+    depth_min: d => Math.round(op.min(d.depth) * 100) / 100,
+    depth_max: d => Math.round(op.max(d.depth) * 100) / 100,
+    qc_min: d => Math.round(op.min(d.qc) * 100) / 100,
+    qc_q05: d => Math.round(op.quantile(d.qc, 0.05) * 100) / 100,
+    qc_q10: d => Math.round(op.quantile(d.qc, 0.10) * 100) / 100,
+    qc_med: d => Math.round(op.median(d.qc) * 100) / 100,
+    qc_q90: d => Math.round(op.quantile(d.qc, 0.90) * 100) / 100,
+    qc_q95: d => Math.round(op.quantile(d.qc, 0.95) * 100) / 100,
+    qc_max: d => Math.round(op.max(d.qc) * 100) / 100,
+  })
+
+Inputs.table(stats_unit, {
+    format: {
+        depth_min: d => d.toFixed(2),
+        depth_max: d => d.toFixed(2),
+        qc_min: d => d.toFixed(2),
+        qc_q05: d => d.toFixed(2),
+        qc_q10: d => d.toFixed(2),
+        qc_med: d => d.toFixed(2),
+        qc_q90: d => d.toFixed(2),
+        qc_q95: d => d.toFixed(2),
+        qc_max: d => d.toFixed(2),
+  }
+})
+```
+
+```{ojs}
+desc_stats(dt, "soil_unit").view()
+```
+:::
+
+:::
+
+::: {#plots .g-col-6 .theme-test}
+
+`Plots` 
+
+*Histograms:*
+
+::: {#hist .panel-tabset .nav-pills}
+
+### `q`<sub>`c`</sub>
+
+```{ojs}
+Plot.plot({
+    width: 350,
+    grid: true,
+    x: {nice: true, label: "qc"},
+    fy: {padding: 0},
+    marks: [
+        Plot.frame(),
+        Plot.areaY(dt_cptu, Plot.binX({y: "count", filter: null}, {x: "qc", fy: "soil_group", fillOpacity: 0.25})),
+        Plot.ruleX(stats_group, {filter: (d) => d.count >= 100, x: "qc_med", fy: "soil_group"}),
+        Plot.text(stats_group, {filter: (d) => d.count >= 100, x: "qc_med", y: 0, fy: "soil_group", text: "qc_med", dx: 5, dy: -10, textAnchor: "start", fill: 'black', stroke: 'white'})
+    ]
+})
+```
+
+:::
+
+:::
+
+:::
+
+:::
+
+## Plots {{< fa chart-simple >}}
+
+::: {layout="[ [1], [1], [1], [2,1,1] ]"}
+
+::: {.panel-input}
+
+`Some inputs for following plots`
+
+```{ojs}
+viewof filt_type2 = Inputs.select([null].concat(dt_cptu.map(d => d.soil_type)), {label: "Soil type:", multiple: false, sort: true, unique: true})
+
+viewof ddd = Inputs.form([
+      Inputs.range([0, 255], {step: 1, label: "r"}),
+      Inputs.range([0, 255], {step: 1, label: "g"}),
+      Inputs.range([0, 255], {step: 1, label: "b"}),
+    ])
+
+viewof filt_group2 = Inputs.select([null].concat(dt_cptu.map(d => d.soil_group)), {label: "Soil group:", multiple: false, sort: true, unique: true})
+
+viewof filt_unit2 = Inputs.select([null].concat(dt_cptu.map(d => d.soil_unit)), {label: "Soil unit:", multiple: false, sort: true, unique: true})
+
+viewof filt_loc2 = Inputs.select([null].concat(dt_cptu.map(d => d.loc_id)), {label: "Location ID:", multiple: false, sort: true, unique: true})
+
+viewof plotdiv = Inputs.range([2, 4], {step: 0.1, value: 3, label: "Width divider:"})
+```
+
+:::
+
+::: {.panel-input}
+
+`Some inputs for following plots`
+
+```{ojs}
+viewof filt_type23 = Inputs.select([null].concat(dt_cptu.map(d => d.soil_type)), {label: "Soil type:", multiple: false, sort: true, unique: true})
+
+viewof filt_group23 = Inputs.select([null].concat(dt_cptu.map(d => d.soil_group)), {label: "Soil group:", multiple: false, sort: true, unique: true})
+
+viewof filt_unit23 = Inputs.select([null].concat(dt_cptu.map(d => d.soil_unit)), {label: "Soil unit:", multiple: false, sort: true, unique: true})
+
+viewof filt_loc23 = Inputs.select([null].concat(dt_cptu.map(d => d.loc_id)), {label: "Location ID:", multiple: false, sort: true, unique: true})
+
+viewof plotdiv2 = Inputs.range([2, 4], {step: 0.1, value: 3, label: "Width divider:"})
+```
+
+:::
+
+`Plots`
+
+```{ojs}
+// Filter some data to create small subset
+
+dt_cptu_small = dt_cptu
+  //.params({ filt_unit2, filt_loc2 })
+  .filter((d) => d.soil_unit == filt_unit2 && d.loc_id == filt_loc2)
+
+plot01 = Plot.plot({
+  caption: "Figure 1. A chart with a title, subtitle, and caption. Figure 1. A chart with a title, subtitle, and caption. Figure 1. A chart with a title, subtitle, and caption. Figure 1. A chart with a title, subtitle, and caption. Figure 1. A chart with a title, subtitle, and caption. Figure 1. A chart with a title, subtitle, and caption. Figure 1. A chart with a title, subtitle, and caption. Figure 1. A chart with a title, subtitle, and caption.",
+  height: 750,
+  width: (width - 70)/2,
+  //marginLeft: 0,
+  marginRight: 5,
+  x: {label: "CONE RESISTANCE, qc (MPa)", domain: [0, 75]},
+  y: {label: "DEPTH, z (m)", reverse: true, domain: [0, 50]},
+  grid: true,
+  marks: [
+    Plot.frame(),
+    Plot.axisX({anchor: "top", labelAnchor: "center"}),
+    Plot.axisX({anchor: "bottom", label: null}),
+    Plot.axisY({anchor: "left", labelAnchor: "center", tickSpacing: 50}),
+    Plot.line(dt_cptu_small, {x: "qc", y: "depth", z: "loc_id", opacity: 0.25, strokeWidth: 2.5, tip: true, clip: true}),
+    Plot.text(dt_cptu_small, Plot.selectMaxY({x: "qc", y: "depth", text: "depth", frameAnchor: "bottom-left", dy: 10, fill: "currentColor", stroke: "white", strokeWidth: 3}))
+  ]
+})
+```
+
+```{ojs}
+plot02 = Plot.plot({
+  caption: "Figure 1. A chart with a title, subtitle, and caption. Figure 1. A chart with a title, subtitle, and caption. Figure 1. A chart with a title, subtitle, and caption. Figure 1. A chart with a title, subtitle, and caption. Figure 1. A chart with a title, subtitle, and caption. Figure 1. A chart with a title, subtitle, and caption. Figure 1. A chart with a title, subtitle, and caption. Figure 1. A chart with a title, subtitle, and caption.",
+  height: 750,
+  width: (width - 70)/4,
+  marginLeft: 5,
+  marginRight: 5,
+  x: {label: "CONE RESISTANCE, qc (MPa)", domain: [0, 75]},
+  y: {label: null, reverse: true, domain: [0, 50]},
+  grid: true,
+  marks: [
+    Plot.frame(),
+    Plot.axisX({anchor: "top", labelAnchor: "center"}),
+    Plot.axisX({anchor: "bottom", label: null}),
+    Plot.axisY({anchor: "left", labelAnchor: "center", tickSpacing: 50}),
+    Plot.line(dt_cptu_small, {x: "qc", y: "depth", z: "loc_id", opacity: 0.25, strokeWidth: 2.5, tip: true, clip: true}),
+    Plot.text(dt_cptu_small, Plot.selectMaxY({x: "qc", y: "depth", text: "depth", frameAnchor: "bottom-left", dy: 10, fill: "currentColor", stroke: "white", strokeWidth: 3}))
+  ]
+})
+```
+
+```{ojs}
+plot03 = Plot.plot({
+  caption: md`Figure 1. Plot of data for *${filt_type23}* soil type, ${filt_group23} soil group, in location **${filt_loc23}**.`,
+  height: 750,
+  width: (width - 70)/4,
+  marginLeft: 5,
+  marginRight: 5,
+  x: {label: "CONE RESISTANCE, qc (MPa)", domain: [0, 75]},
+  y: {label: null, reverse: true, domain: [0, 50]},
+  grid: true,
+  marks: [
+    Plot.frame(),
+    Plot.axisX({anchor: "top", labelAnchor: "center"}),
+    Plot.axisX({anchor: "bottom", label: null}),
+    Plot.axisY({anchor: "left", labelAnchor: "center", tickSpacing: 50}),
+    Plot.line(dt_cptu_small, {x: "qc", y: "depth", z: "loc_id", opacity: 0.25, strokeWidth: 2.5, tip: true, clip: true}),
+    Plot.text(dt_cptu_small, Plot.selectMaxY({x: "qc", y: "depth", text: "depth", frameAnchor: "bottom-left", dy: 10, fill: "currentColor", stroke: "white", strokeWidth: 3}))
+  ]
+})
+```
+
+:::
+
+## Other
+
+```{ojs}
+viewof strokew = Inputs.range([1, 5], {step: 0.1, value: 1, label: "Stroke width:"})
+```
+
+```{ojs}
+import { square } from "./utils.js"
+square(strokew)
+```
+
+```{ojs}
+viewof paramx = Inputs.select(["qc", "Ic"], {label: "Parameter x:"})
+viewof paramy = Inputs.select(["depth", "fs"], {label: "Parameter y:"})
+```
+
+```{ojs}
+viewof show = Inputs.toggle({label: "Show?"}) // show plot
+```
+
+```{ojs}
+dt_cptu_plot = dt_cptu.filter((d) => d.soil_unit == "F S")
+
+import { funcpl } from "./utils.js"
+funcpl(dt_cptu_plot, dt_cptu_plot.map((d) => d.qc), dt_cptu_plot.map((d) => d.depth), show) // not needed? x, y directly from viewof?
+funcpl(dt_cptu_plot, paramx, paramy, show, strokew)
+```
+
+# Conditional inputs
+
+```{ojs}
+viewof showparams = Inputs.radio(["hide", "show"], {label: "Additional?", value: "hide"})
+```
+
+```{ojs}
+import { showpar } from "./utils.js"
+showpar(showparams)
+
+// smth doesn't quite work (see below)
+```
+
+```{ojs}
+viewof fff = Inputs.form([
+      Inputs.range([0, 255], {step: 1, label: "r"}),
+      Inputs.range([0, 255], {step: 1, label: "g"}),
+      Inputs.range([0, 255], {step: 1, label: "b"}),
+      Inputs.range([0, 255], {step: 1, label: "r"}),
+      Inputs.range([0, 255], {step: 1, label: "g"}),
+      Inputs.range([0, 255], {step: 1, label: "b"})
+    ])
+```
+
+:::

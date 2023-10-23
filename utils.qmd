@@ -1,0 +1,23 @@
+# Utils etc
+
+## Data
+
+```{ojs}
+// read CSV files into OJS data
+// cpt
+data_test_01 = FileAttachment('data-source/cpt_raw.csv').csv({typed: true}) // raw
+data_test_02 = FileAttachment('data-source/cpt_int.csv').csv({typed: true}) // interp
+```
+
+```{ojs}
+Inputs.table(data_test_01)
+```
+
+## Output
+
+```{ojs}
+// square root
+export function square2(x) {
+  return x * x;
+}
+```
